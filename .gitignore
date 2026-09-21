@@ -1,0 +1,10 @@
+# Originales de las guías (Word/PDF): no van al repo
+fuentes/
+*.docx
+*.pdf
+
+# Pruebas temporales y basura del sistema
+tool-test.html
+Thumbs.db
+.DS_Store
+.vercel

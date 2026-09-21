@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dev-Cheatsheets</title>
+<meta name="description" content="Referencias rápidas de comandos, interactivas y copiables.">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/common.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">Dev-Cheatsheets</a>
+  <span class="spacer"></span>
+  <button id="theme" class="icon-btn" type="button"></button>
+</header>
+
+<section class="hero">
+  <h1>Comandos a un clic.</h1>
+  <p>Elige una herramienta, salta a la sección que necesitas y copia el comando. Sin buscar en PDFs.</p>
+  <div class="search">
+    <input id="q" type="search" placeholder="Buscar en todas las guías…" aria-label="Buscar en todas las guías" autocomplete="off">
+    <kbd>/</kbd>
+  </div>
+</section>
+
+<div id="grid" class="grid"></div>
+<div id="results" class="results" hidden></div>
+
+<script src="data/registry.js"></script>
+<script src="assets/logos.js"></script>
+<script src="assets/index.js"></script>
+</body>
+</html>
