@@ -21,7 +21,7 @@ window.REGISTRY = [
     nombre: 'Git',
     descripcion: 'Commits, ramas, merge, rebase, stash y remotos.',
     color: '#f05032',
-    estado: 'proximamente'
+    estado: 'listo'
   },
   {
     id: 'scoop',
