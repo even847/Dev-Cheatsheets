@@ -28,7 +28,7 @@ window.REGISTRY = [
     nombre: 'Scoop',
     descripcion: 'Instalar y mantener herramientas en Windows desde la terminal.',
     color: '#e8a33d',
-    estado: 'proximamente'
+    estado: 'listo'
   },
   {
     id: 'maven',
