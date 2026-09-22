@@ -35,7 +35,7 @@ window.REGISTRY = [
     nombre: 'Maven',
     descripcion: 'Ciclo de vida, dependencias, perfiles y plugins.',
     color: '#c71a36',
-    estado: 'proximamente'
+    estado: 'listo'
   },
   {
     id: 'node',
