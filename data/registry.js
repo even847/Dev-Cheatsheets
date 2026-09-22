@@ -14,7 +14,7 @@ window.REGISTRY = [
     nombre: 'Kubernetes',
     descripcion: 'kubectl, pods, deployments, services y manifiestos.',
     color: '#326ce5',
-    estado: 'proximamente'
+    estado: 'listo'
   },
   {
     id: 'git',
@@ -49,6 +49,6 @@ window.REGISTRY = [
     nombre: 'PowerShell',
     descripcion: 'Archivos, procesos, red y variables de entorno en Windows.',
     color: '#2671be',
-    estado: 'proximamente'
+    estado: 'listo'
   }
 ];
