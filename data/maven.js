@@ -112,7 +112,7 @@ window.CHEATSHEETS.maven = {
         {
           cmd: 'mvn jacoco:merge',
           desc: 'Combina varios archivos .exec en uno solo antes del report/check.',
-          warn: 'En Quarkus es obligatorio si usas @QuarkusTest: el classloader aumentado de Quarkus escribe target/jacoco-quarkus.exec por separado del target/jacoco.exec del agente estándar. Sin este merge, la cobertura de infraestructura/REST reporta 0% aunque los tests sí corrieron.'
+          warn: 'Necesario cuando algún framework o motor de test usa su propio classloader y escribe su .exec por separado del agente estándar de Jacoco. Sin este merge, la cobertura de esa parte reporta 0% aunque los tests sí corrieron.'
         },
         { cmd: 'mvn surefire-report:report', desc: 'Genera un reporte HTML legible de los resultados de los tests ya ejecutados.' }
       ]
@@ -196,9 +196,8 @@ window.CHEATSHEETS.maven = {
         { cmd: '.\\mvnw.cmd clean verify', desc: 'Build completo con el gate de calidad, tal como correría en CI antes de aceptar un cambio.' },
         { cmd: '.\\mvnw.cmd clean install -DskipTests', desc: 'Genera rápido el artefacto para probarlo en otro proyecto local, sin esperar a que corran los tests.' },
         { cmd: 'mvn dependency:tree -Dincludes=org.slf4j', desc: 'Rastrea de dónde viene una versión concreta de slf4j cuando hay un conflicto de versiones.' },
-        { cmd: 'mvn versions:display-dependency-updates', desc: 'Revisión rápida de qué dependencias conviene actualizar antes de un checkmarx/SCA scan.' },
-        { cmd: '.\\mvnw.cmd test -Dtest=PolizaResourceTest -DfailIfNoTests=false', desc: 'Corre un solo test class puntual mientras se depura, sin fallar si el filtro no matchea nada.' },
-        { cmd: '.\\mvnw.cmd quarkus:dev', desc: 'En un proyecto Quarkus, levanta el modo desarrollo con live reload (equivalente a lo que antes era ./gradlew quarkusDev en Gradle).' },
+        { cmd: 'mvn versions:display-dependency-updates', desc: 'Revisión rápida de qué dependencias conviene actualizar antes de un escaneo de seguridad de dependencias (SCA).' },
+        { cmd: '.\\mvnw.cmd test -Dtest=<Clase> -DfailIfNoTests=false', desc: 'Corre un solo test class puntual mientras se depura, sin fallar si el filtro no matchea nada.' },
         { cmd: 'mvn archetype:generate', desc: 'Bootstrap interactivo de un proyecto Maven nuevo a partir de un arquetipo.' },
         { cmd: 'mvn clean install -pl mi-modulo -am -DskipTests', desc: 'En un multi-módulo, reconstruye rápido solo el módulo que estás tocando y sus dependencias, sin tests.' }
       ],
@@ -262,7 +261,8 @@ window.CHEATSHEETS.maven = {
         { term: 'Perfil (profile)', def: 'Bloque de configuración opcional que solo se aplica cuando se activa explícitamente (-P) o por una condición automática.' },
         { term: 'SNAPSHOT', def: 'Sufijo de versión que indica una build en desarrollo, no una release final; Maven la vuelve a resolver en cada build si hay una más nueva.' },
         { term: 'BOM', def: 'Bill of Materials: un pom de tipo pom usado solo en <dependencyManagement> para fijar versiones consistentes de un conjunto de dependencias relacionadas.' },
-        { term: 'Wrapper (mvnw)', def: 'Scripts (mvnw / mvnw.cmd) que descargan y usan la versión exacta de Maven fijada para el proyecto, sin depender de una instalación global.' },
+        { term: 'mvn', def: 'El ejecutable de Maven instalado globalmente en el sistema (el que resuelve el PATH). Usa la versión de Maven que esté instalada en esa máquina, sea cual sea — puede variar entre desarrolladores o entre tu máquina y CI.' },
+        { term: 'Wrapper (mvnw / mvnw.cmd)', def: 'Alternativa a mvn que no depende de una instalación global: descarga (la primera vez) y ejecuta la versión exacta de Maven fijada en .mvn/wrapper/maven-wrapper.properties para ese proyecto. Con .\\mvnw.cmd (Windows) o ./mvnw (Linux/macOS) todos —y CI— corren siempre la misma versión, sin importar qué mvn global tenga cada quien.' },
         { term: 'Surefire', def: 'Plugin que ejecuta los tests unitarios durante la fase test.' },
         { term: 'Failsafe', def: 'Plugin que ejecuta los tests de integración (normalmente sufijo *IT) durante las fases integration-test/verify.' },
         { term: 'Effective POM', def: 'El pom.xml final que Maven realmente usa, con toda la herencia de parents, perfiles activos y valores por defecto ya resueltos.' },
