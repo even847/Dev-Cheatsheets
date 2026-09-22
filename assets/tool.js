@@ -20,8 +20,7 @@
   document.documentElement.style.setProperty('--accent', entry.color);
   document.title = entry.nombre + ' · Dev-Cheatsheets';
   document.getElementById('crumb').textContent = entry.nombre;
-  const headLogo = document.getElementById('head-logo');
-  headLogo.innerHTML = logoFor(entry.id);
+  document.getElementById('crumb-logo').innerHTML = logoFor(entry.id);
 
   if (entry.estado !== 'listo') {
     document.querySelector('.topbar .search').hidden = true;
@@ -103,8 +102,7 @@
         idx > 0 ? navBtn(idx - 1, '← ' + data.secciones[idx - 1].titulo, 'prev') : el('span'),
         idx < last ? navBtn(idx + 1, data.secciones[idx + 1].titulo + ' →', 'next') : el('span'));
       const sec = el('section', { class: 'sec', id: s.id },
-        el('h2', {}, el('span', { class: 'num' }, String(idx + 1).padStart(2, '0')), s.titulo,
-          el('a', { class: 'anchor', href: '#' + s.id, 'aria-label': 'Enlace a la sección' }, '#'), count),
+        el('h2', {}, el('span', { class: 'num' }, String(idx + 1).padStart(2, '0')), s.titulo, count),
         s.intro && el('p', { class: 'intro' }, s.intro),
         s.nota && el('div', { class: 'note' }, s.nota),
         list,

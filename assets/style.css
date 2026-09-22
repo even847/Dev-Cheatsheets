@@ -56,6 +56,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .brand small { color: var(--muted); font-weight: 500; }
 .brand .logo { width: 30px; height: 30px; color: var(--accent); flex: none; }
 .crumb-sep { color: var(--border); }
+.crumb-logo { width: 20px; height: 20px; color: var(--accent); flex: none; }
 .spacer { flex: 1; }
 .search {
   position: relative; flex: 1; max-width: 460px;
@@ -171,8 +172,6 @@ section.sec > h2 .num {
   padding: 3px 9px; border-radius: 7px; align-self: center; letter-spacing: 0;
 }
 section.sec > h2 .count { margin-left: auto; font: 500 .8rem var(--sans); color: var(--muted); }
-section.sec > h2 a.anchor { color: var(--muted); text-decoration: none; opacity: 0; font-weight: 400; }
-section.sec > h2:hover a.anchor { opacity: 1; }
 
 .item { margin-top: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
 .item .desc { margin: 10px 2px 0; color: var(--text); font-size: .95rem; }
