@@ -242,6 +242,23 @@ section.sec > h2 .count { margin-left: auto; font: 500 .8rem var(--sans); color:
 .item .warn::before { content: "⚠ "; }
 .item.hidden, section.sec.hidden { display: none; }
 
+/* comando ubicado desde un favorito o una búsqueda: se ilumina y se apaga solo a los 5 s */
+.item.flash { animation: flash 5s ease-out; }
+@keyframes flash {
+  0%, 65% {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 40%, transparent);
+    background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  }
+  100% { border-color: var(--border); box-shadow: 0 0 0 0 transparent; background: var(--surface); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .item.flash {
+    animation: none; border-color: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+}
+
 .code {
   position: relative; display: flex; align-items: flex-start; gap: 8px;
   background: var(--code-bg); color: var(--code-text); border-radius: 9px; padding: 0 0 0 14px;
