@@ -24,6 +24,13 @@ window.REGISTRY = [
     estado: 'listo'
   },
   {
+    id: 'gh',
+    nombre: 'GitHub CLI',
+    descripcion: 'Pull requests, issues, repos, Actions y releases desde la terminal.',
+    color: '#8250df',
+    estado: 'listo'
+  },
+  {
     id: 'scoop',
     nombre: 'Scoop',
     descripcion: 'Instalar y mantener herramientas en Windows desde la terminal.',

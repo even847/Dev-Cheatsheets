@@ -71,5 +71,12 @@
     '<path d="M22 22l14 11-19 12M31 47h16" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>'
   );
 
-  window.LOGOS = { docker, kubernetes, git, scoop, maven, node, powershell, generico };
+  // GitHub CLI: círculo con dos nodos unidos por una rama (pull request)
+  const gh = svg(
+    '<circle cx="32" cy="32" r="27" fill="currentColor"/>' +
+    '<g stroke="#fff" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M24 22v20M24 32h10c3 0 6 2 6 6"/></g>' +
+    '<g fill="#fff"><circle cx="24" cy="21" r="4.5"/><circle cx="24" cy="43" r="4.5"/><circle cx="40" cy="42" r="4.5"/></g>'
+  );
+
+  window.LOGOS = { docker, kubernetes, git, gh, scoop, maven, node, powershell, generico };
 })();
