@@ -128,7 +128,7 @@
     });
 
     // Centra un comando en pantalla y lo ilumina unos segundos, para ubicarlo dentro de su sección
-    let flashTimer;
+    let flashTimer, flashNode = null;
     function flash(cmd, sid) {
       const s = secEls.find(x => x.sec.id === sid) || secEls.find(x => x.itemEls.some(n => n._cmd === cmd));
       const node = s && s.itemEls.find(n => n._cmd === cmd);
@@ -138,9 +138,14 @@
       document.querySelectorAll('.item.flash').forEach(n => n.classList.remove('flash'));
       void node.offsetWidth; // reinicia la animación si ya estaba iluminado
       node.classList.add('flash');
-      node.scrollIntoView({ block: 'center' });
+      flashNode = node;
+      centerFlash();
       clearTimeout(flashTimer);
-      flashTimer = setTimeout(() => node.classList.remove('flash'), 5000);
+      flashTimer = setTimeout(() => { node.classList.remove('flash'); flashNode = null; }, 5000);
+    }
+    // Salto instantáneo: con scroll suave, Firefox cancela el segundo desplazamiento seguido
+    function centerFlash() {
+      if (flashNode) flashNode.scrollIntoView({ block: 'center', behavior: 'instant' });
     }
 
     /* ----- vista "Favoritos" de esta guía: solo los comandos marcados aquí ----- */
@@ -245,15 +250,22 @@
     if (h0 >= 0) cur = h0;
     if (decodeURIComponent(location.hash.slice(1)) === FAV_ID) showFavs = true;
     apply();
-    if (h0 >= 0) requestAnimationFrame(() => secEls[h0].sec.scrollIntoView());
-
-    // Enlaces con ?hl=<comando> (favoritos, resultados de búsqueda): ilumina ese comando
+    // Enlaces con ?hl=<comando> (favoritos, resultados de búsqueda): ilumina y centra ese comando.
+    // El navegador hace su propio salto al #sección cuando termina de cargar; por eso se espera al
+    // evento load y se repite el centrado un par de veces, salvo que la persona ya haya movido la página.
     const hl = params.get('hl');
+    if (h0 >= 0 && !hl) requestAnimationFrame(() => secEls[h0].sec.scrollIntoView());
     if (hl) {
-      requestAnimationFrame(() => {
+      let moved = false;
+      ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(ev =>
+        window.addEventListener(ev, () => { moved = true; }, { once: true, passive: true }));
+      const settle = () => {
         flash(hl, h0 >= 0 ? secEls[h0].sec.id : '');
+        [200, 700].forEach(ms => setTimeout(() => { if (!moved) centerFlash(); }, ms));
         try { history.replaceState(null, '', location.pathname + '?t=' + encodeURIComponent(entry.id) + location.hash); } catch (e) { /* ignorar */ }
-      });
+      };
+      if (document.readyState === 'complete') setTimeout(settle, 50);
+      else window.addEventListener('load', () => setTimeout(settle, 50), { once: true });
     }
 
     // Botón atrás / enlaces con #sección estando ya en la página

@@ -86,7 +86,7 @@
             el('a', { href: 'index.html' }, 'Ver las guías')),
       el('div', { class: 'favs-tools' }, exportBtn, importBtn,
         el('span', { class: 'favs-note' }, 'Exporta tus favoritos para tener un respaldo o llevarlos a otro navegador.')),
-      importArea, msg);
+      ...[importArea, msg].filter(Boolean)); // replaceChildren escribe "null" si recibe null
   }
 
   // Pide los datos de las guías con favoritos, para mostrar el nombre de la sección y la descripción
