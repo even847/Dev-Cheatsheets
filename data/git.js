@@ -69,6 +69,9 @@ window.CHEATSHEETS.git = {
         { cmd: 'git config --global alias.<alias> "<comando>"', desc: 'Crea un atajo para un comando largo.', ej: 'git config --global alias.st "status -s"' },
         { cmd: 'git config --global core.autocrlf true', desc: 'En Windows, convierte los saltos de línea LF a CRLF al hacer checkout y de vuelta a LF al confirmar, para trabajar bien con repositorios que usan LF (la mayoría).' },
         { cmd: 'git config --global credential.helper manager', desc: 'Usa el Git Credential Manager para guardar credenciales de HTTPS de forma segura, sin pedirlas en cada push/pull.' },
+        { cmd: 'git config --global pull.rebase true', desc: 'Hace que git pull haga rebase en vez de merge por defecto, evitando commits de merge innecesarios.' },
+        { cmd: 'git config --global push.autoSetupRemote true', desc: 'En el primer git push de una rama nueva la vincula sola al remoto, sin necesidad de -u origin <rama>.' },
+        { cmd: 'git config --global fetch.prune true', desc: 'Al hacer fetch/pull, elimina automáticamente las referencias locales a ramas que ya se borraron en el remoto.' },
         { cmd: 'git config --list --show-origin', desc: 'Muestra toda la configuración efectiva y de qué archivo viene cada valor.' },
         { cmd: 'git config --global -e', desc: 'Abre el archivo de configuración global (~/.gitconfig) directamente en el editor.' }
       ]
@@ -86,7 +89,10 @@ window.CHEATSHEETS.git = {
         { cmd: 'git restore <archivo>', desc: 'Descarta los cambios sin confirmar de un archivo, volviéndolo a como estaba en el último commit.', warn: 'Los cambios descartados no se pueden recuperar.' },
         { cmd: 'git restore --staged <archivo>', desc: 'Saca un archivo del área de preparación sin perder sus cambios; queda como modificado sin agregar.' },
         { cmd: 'git diff', desc: 'Muestra las diferencias entre el directorio de trabajo y lo que ya está en staging.' },
-        { cmd: 'git diff --staged', desc: 'Muestra las diferencias entre lo que está en staging y el último commit.', alias: 'git diff --cached' }
+        { cmd: 'git diff --staged', desc: 'Muestra las diferencias entre lo que está en staging y el último commit.', alias: 'git diff --cached' },
+        { cmd: 'git diff --stat', desc: 'Resumen de los cambios: qué archivos cambiaron y cuántas líneas se agregaron o quitaron, sin mostrar el contenido.' },
+        { cmd: 'git rm --cached <archivo>', desc: 'Deja de trackear un archivo pero lo conserva en disco; útil cuando agregaste por error algo que debía estar en .gitignore.' },
+        { cmd: 'git mv <origen> <destino>', desc: 'Renombra o mueve un archivo y deja el cambio ya en staging.' }
       ]
     },
     {
@@ -108,13 +114,23 @@ window.CHEATSHEETS.git = {
         { cmd: 'git log', desc: 'Muestra el historial de commits de la rama actual, del más reciente al más antiguo.' },
         { cmd: 'git log --oneline', desc: 'Una línea por commit: hash corto y mensaje.' },
         { cmd: 'git log --oneline --graph --all', desc: 'Historial de todas las ramas con un gráfico ASCII de cómo se bifurcan y se unen.' },
+        { cmd: 'git log -1', desc: 'Muestra solo el commit más reciente (hash, autor, fecha y mensaje), sin diff. El número limita cuántos commits se listan: -3 muestra los últimos tres.' },
         { cmd: 'git log -p -1', desc: 'Muestra el commit más reciente junto con su diff completo.' },
         { cmd: 'git log --author="<nombre>"', desc: 'Filtra el historial por autor.' },
         { cmd: 'git log --since="<fecha>" --until="<fecha>"', desc: 'Filtra el historial por rango de fechas.' },
+        { cmd: 'git log --grep="<texto>"', desc: 'Filtra los commits cuyo mensaje contiene el texto indicado.' },
+        { cmd: 'git log -S"<texto>"', desc: 'Encuentra los commits que agregaron o quitaron ese texto en el código (pickaxe); sirve para saber cuándo apareció o desapareció algo.' },
+        { cmd: 'git log --stat', desc: 'Muestra, por cada commit, qué archivos tocó y cuántas líneas cambió.' },
+        { cmd: 'git log --follow -- <archivo>', desc: 'Historial de un archivo puntual, siguiéndolo aunque haya sido renombrado.' },
+        { cmd: 'git log <rama-a>..<rama-b>', desc: 'Lista los commits que están en rama-b y no en rama-a; por ejemplo, qué trae tu rama respecto a main.', ej: 'git log main..HEAD --oneline' },
+        { cmd: 'git shortlog -sn', desc: 'Resume cuántos commits hizo cada autor, ordenados de mayor a menor.' },
+        { cmd: 'git reflog', desc: 'Historial de todos los movimientos de HEAD (commits, resets, cambios de rama, rebases), incluso de commits que ya no están en ninguna rama.', tip: 'Es la red de seguridad: si hiciste un reset --hard o borraste una rama por error, busca aquí el hash y recupéralo con git switch -c <rama> <hash>.' },
+        { cmd: 'git bisect start', desc: 'Inicia una búsqueda binaria del commit que introdujo un bug: marcas uno malo (git bisect bad) y uno bueno (git bisect good <commit>), y Git te va llevando por los commits intermedios.', tip: 'Al terminar, git bisect reset vuelve a tu rama original.' },
         { cmd: 'git show <commit>', desc: 'Muestra los metadatos y el diff de un commit específico.' },
         { cmd: 'git show HEAD~1', desc: 'Muestra el commit anterior al actual (HEAD~2 sería dos atrás, y así sucesivamente).' },
         { cmd: 'git blame <archivo>', desc: 'Muestra, línea por línea, en qué commit y por quién se modificó por última vez cada línea del archivo.' },
-        { cmd: 'git diff <commitA> <commitB>', desc: 'Muestra las diferencias entre dos commits o ramas.' }
+        { cmd: 'git diff <commitA> <commitB>', desc: 'Muestra las diferencias entre dos commits o ramas.' },
+        { cmd: 'git diff main...HEAD', desc: 'Con tres puntos compara tu rama contra el punto donde se separó de main: muestra solo lo que tú cambiaste, sin lo que main avanzó después.' }
       ]
     },
     {
@@ -123,13 +139,19 @@ window.CHEATSHEETS.git = {
       items: [
         { cmd: 'git branch', desc: 'Lista las ramas locales; marca con * la rama activa.' },
         { cmd: 'git branch -a', desc: 'Lista ramas locales y remotas conocidas.' },
+        { cmd: 'git branch -vv', desc: 'Lista las ramas locales con su último commit y la rama remota que siguen (upstream), indicando si van adelante o atrás.', ej: '* main  a8ef81a [origin/main: ahead 1] feat: agregar guías\n  dev   907167c [origin/dev] feat: agregar guía de Scoop' },
         { cmd: 'git branch <nombre>', desc: 'Crea una rama nueva a partir del commit actual, sin cambiarte a ella.' },
         { cmd: 'git switch <rama>', desc: 'Cambia a una rama existente.', alias: 'git checkout <rama>' },
+        { cmd: 'git switch -', desc: 'Vuelve a la rama en la que estabas antes; útil para alternar entre dos ramas.' },
         { cmd: 'git switch -c <rama>', desc: 'Crea una rama nueva y se cambia a ella en un solo paso.', alias: 'git checkout -b <rama>' },
         { cmd: 'git branch -m <nuevo-nombre>', desc: 'Renombra la rama activa.' },
         { cmd: 'git branch -d <rama>', desc: 'Elimina una rama local ya fusionada.', warn: 'Falla si la rama tiene commits sin fusionar; usa -D para forzar.' },
         { cmd: 'git branch -D <rama>', desc: 'Elimina una rama local aunque tenga commits sin fusionar.', warn: 'Los commits exclusivos de esa rama quedan sin ninguna referencia y Git puede eliminarlos definitivamente.' },
-        { cmd: 'git branch --merged', desc: 'Lista las ramas ya fusionadas en la rama actual; candidatas seguras para borrar.' }
+        { cmd: 'git branch --merged', desc: 'Lista las ramas ya fusionadas en la rama actual; candidatas seguras para borrar.' },
+        { cmd: 'git branch --no-merged', desc: 'Lista las ramas que todavía tienen commits sin fusionar en la rama actual.' },
+        { cmd: 'git branch -u origin/<rama>', desc: 'Vincula la rama actual con una rama remota (upstream) que ya existe.', alias: 'git branch --set-upstream-to=origin/<rama>' },
+        { cmd: 'git push origin --delete <rama>', desc: 'Elimina una rama del remoto; la rama local no se toca.' },
+        { cmd: 'git fetch --prune', desc: 'Descarga novedades y limpia las referencias a ramas remotas que ya no existen.', alias: 'git fetch -p' }
       ]
     },
     {
@@ -144,7 +166,9 @@ window.CHEATSHEETS.git = {
         { cmd: 'git rebase -i HEAD~<n>', desc: 'Rebase interactivo: permite reordenar, combinar (squash) o editar los últimos n commits antes de reescribirlos.' },
         { cmd: 'git rebase --continue', desc: 'Continúa un rebase después de resolver los conflictos del paso actual.' },
         { cmd: 'git rebase --abort', desc: 'Cancela un rebase en curso y vuelve al estado anterior al comando.' },
-        { cmd: 'git cherry-pick <commit>', desc: 'Aplica un commit específico de otra rama sobre la rama activa, sin traer el resto de su historial.' }
+        { cmd: 'git merge --squash <rama>', desc: 'Trae todos los cambios de <rama> como un solo conjunto en staging, sin crear el commit de merge; tú confirmas con un único commit.' },
+        { cmd: 'git cherry-pick <commit>', desc: 'Aplica un commit específico de otra rama sobre la rama activa, sin traer el resto de su historial.' },
+        { cmd: 'git cherry-pick --abort', desc: 'Cancela un cherry-pick con conflictos y vuelve al estado previo.' }
       ],
       nota: 'Al haber conflictos, Git marca en los archivos las zonas en disputa con <<<<<<<, ======= y >>>>>>>; edítalas, deja el resultado final y confirma con git add antes de continuar (git rebase --continue o el commit del merge).'
     },
@@ -158,6 +182,7 @@ window.CHEATSHEETS.git = {
         { cmd: 'git remote remove <nombre>', desc: 'Elimina un remoto del repositorio local; no afecta al servidor remoto.' },
         { cmd: 'git fetch', desc: 'Descarga commits y ramas nuevas del remoto, sin fusionarlos en tu trabajo actual.' },
         { cmd: 'git fetch --all', desc: 'Descarga novedades de todos los remotos configurados.' },
+        { cmd: 'git fetch --prune', desc: 'Descarga novedades y elimina las referencias locales a ramas remotas que ya se borraron en el servidor.', alias: 'git fetch -p', tip: 'Para que sea automático en cada fetch/pull: git config --global fetch.prune true.' },
         { cmd: 'git pull', desc: 'Descarga y fusiona (fetch + merge) los cambios del remoto en la rama actual.' },
         { cmd: 'git pull --rebase', desc: 'Descarga los cambios y reaplica tus commits locales encima, en vez de crear un commit de merge.' },
         { cmd: 'git push', desc: 'Sube los commits de la rama actual al remoto correspondiente.' },
@@ -176,6 +201,9 @@ window.CHEATSHEETS.git = {
         { cmd: 'git reset HEAD~1', desc: 'Deshace el último commit y deja sus cambios sin staging (modo mixed, el predeterminado).' },
         { cmd: 'git reset --hard HEAD~1', desc: 'Deshace el último commit y descarta también sus cambios del directorio de trabajo.', warn: 'Pierdes el contenido del commit y los cambios sin confirmar que tuvieras encima; no se puede deshacer con un comando normal.' },
         { cmd: 'git revert <commit>', desc: 'Crea un commit nuevo que aplica el efecto contrario de <commit>, sin borrar el commit original del historial.', tip: 'Es la forma segura de deshacer algo que ya se subió a un remoto compartido.' },
+        { cmd: 'git revert -m 1 <commit-de-merge>', desc: 'Deshace un commit de merge; -m 1 indica que la línea principal a conservar es la primera (normalmente la rama destino, como main).' },
+        { cmd: 'git restore --source=<commit> <archivo>', desc: 'Recupera un archivo tal como estaba en un commit específico, sin mover la rama.', ej: 'git restore --source=HEAD~2 src/app.js' },
+        { cmd: 'git reflog', desc: 'Si hiciste un reset o borraste una rama por error, aquí aparece el hash al que puedes volver con git reset --hard <hash>.', tip: 'Ver la sección Historial e inspección.' },
         { cmd: 'git clean -n', desc: 'Muestra qué archivos sin trackear se eliminarían, sin borrar nada todavía.', alias: 'git clean --dry-run' },
         { cmd: 'git clean -fd', desc: 'Elimina archivos y carpetas sin trackear del directorio de trabajo.', warn: 'No se puede deshacer; ejecuta primero git clean -n para revisar qué se va a borrar.' }
       ]
@@ -187,9 +215,11 @@ window.CHEATSHEETS.git = {
       items: [
         { cmd: 'git stash', desc: 'Guarda los cambios trackeados (staged y sin staging) y limpia el directorio de trabajo.', alias: 'git stash push' },
         { cmd: 'git stash -u', desc: 'Incluye también los archivos nuevos sin trackear.', alias: 'git stash push -u' },
+        { cmd: 'git stash push -m "<mensaje>"', desc: 'Guarda el stash con un nombre descriptivo, para reconocerlo luego en git stash list.' },
         { cmd: 'git stash list', desc: 'Lista los stashes guardados, del más reciente al más antiguo.' },
         { cmd: 'git stash pop', desc: 'Aplica el stash más reciente sobre el directorio de trabajo y lo elimina de la pila.', warn: 'Puede generar conflictos si el directorio de trabajo cambió desde que se guardó el stash.' },
         { cmd: 'git stash apply', desc: 'Aplica el stash más reciente pero lo mantiene en la pila, por si necesitas aplicarlo también en otra rama.' },
+        { cmd: 'git stash pop stash@{<n>}', desc: 'Aplica un stash específico de la lista en vez del más reciente; n es el número que muestra git stash list.', ej: 'git stash pop stash@{2}' },
         { cmd: 'git stash drop', desc: 'Elimina el stash más reciente de la pila sin aplicarlo.' },
         { cmd: 'git stash show -p stash@{0}', desc: 'Muestra el diff completo de un stash específico sin aplicarlo.' },
         { cmd: 'git stash branch <nombre>', desc: 'Crea una rama nueva a partir del commit donde se guardó el stash y lo aplica ahí; útil cuando aplicarlo directo genera conflictos.' }
@@ -208,6 +238,24 @@ window.CHEATSHEETS.git = {
         { cmd: 'git tag -d <nombre>', desc: 'Elimina un tag local.' },
         { cmd: 'git push origin --delete <nombre>', desc: 'Elimina un tag del remoto.' }
       ]
+    },
+    {
+      id: 'alias-comandos-propios',
+      titulo: 'Alias: crear tus propios comandos',
+      intro: 'Un alias es un atajo que tú defines para un comando de Git largo o que repites mucho. Se guardan en la sección [alias] del archivo ~/.gitconfig y funcionan como cualquier subcomando: git st, git lg, etc.',
+      items: [
+        { cmd: 'git config --global alias.<nombre> "<comando>"', desc: 'Crea un alias global. Escribe el comando sin la palabra git al inicio.', ej: 'git config --global alias.st "status -s"' },
+        { cmd: 'git config --global alias.lg "log --oneline --graph --all --decorate"', desc: 'Alias para ver el historial de todas las ramas en gráfico; después basta con git lg.' },
+        { cmd: 'git config --global alias.co "switch"', desc: 'Atajo corto para cambiar de rama: git co main.' },
+        { cmd: 'git config --global alias.last "log -1 --stat"', desc: 'Muestra el último commit con los archivos que tocó: git last.' },
+        { cmd: 'git config --global alias.unstage "restore --staged"', desc: 'Nombre más claro para sacar un archivo de staging: git unstage <archivo>.' },
+        { cmd: 'git config --global alias.undo "reset --soft HEAD~1"', desc: 'Deshace el último commit dejando los cambios en staging: git undo.' },
+        { cmd: 'git config --global alias.ac "!git add -A && git commit -m"', desc: 'Con ! al inicio el alias se ejecuta como comando de shell, lo que permite encadenar varios comandos: git ac "mensaje".', warn: 'En PowerShell escribe el valor entre comillas simples si contiene comillas dobles; el mensaje del commit se pasa después del alias.' },
+        { cmd: 'git config --global --get-regexp alias', desc: 'Lista todos los alias que tienes definidos.' },
+        { cmd: 'git config --global --unset alias.<nombre>', desc: 'Elimina un alias.' },
+        { cmd: 'git config --global -e', desc: 'Abre ~/.gitconfig para editar los alias a mano bajo la sección [alias].', ej: '[alias]\n    st = status -s\n    lg = log --oneline --graph --all --decorate' }
+      ],
+      nota: 'Un alias no puede reemplazar un comando propio de Git (por ejemplo, alias.commit se ignora). Elige nombres que no choquen con los existentes.'
     },
     {
       id: 'comandos-practicos-combinados',
@@ -279,6 +327,9 @@ window.CHEATSHEETS.git = {
         { term: 'Stash', def: 'Cambios sin confirmar guardados temporalmente fuera del historial, para limpiar el directorio de trabajo sin perderlos.' },
         { term: '.gitignore', def: 'Archivo con patrones de rutas que Git debe ignorar al mostrar el estado o al agregar archivos.' },
         { term: 'Hash / SHA', def: 'Identificador único de 40 caracteres (o su forma corta) que Git calcula para cada commit según su contenido.' },
+        { term: 'Alias', def: 'Atajo personalizado para un comando de Git, definido en la sección [alias] de la configuración.' },
+        { term: 'Reflog', def: 'Registro local de todos los movimientos de HEAD; permite recuperar commits que ya no aparecen en ninguna rama.' },
+        { term: 'Squash', def: 'Combinar varios commits en uno solo, ya sea con rebase -i o con merge --squash.' },
         { term: 'Working tree clean', def: 'Estado en el que no hay cambios sin confirmar ni archivos nuevos sin trackear.' }
       ]
     }
