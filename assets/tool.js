@@ -1,5 +1,5 @@
 (function () {
-  const { el, codeBlock, loadScript, logoFor, initTheme, norm } = window.DC;
+  const { el, codeBlock, loadScript, logoFor, initTheme, norm, favButton } = window.DC;
   const params = new URLSearchParams(location.search);
   const id = params.get('t');
   const entry = (window.REGISTRY || []).find(t => t.id === id);
@@ -46,7 +46,7 @@
 
   function render(data) {
     const total = data.secciones.reduce((n, s) => n + s.items.length, 0);
-    const baseStatus = total + ' entradas en ' + data.secciones.length + ' secciones · Haz clic en un <valor> amarillo para escribir el tuyo';
+    const baseStatus = total + ' entradas en ' + data.secciones.length + ' secciones · Haz clic en un <valor> amarillo para escribir el tuyo · Marca con ★ tus favoritos';
     const status = el('p', { class: 'status', 'aria-live': 'polite' }, baseStatus);
 
     content.append(
@@ -78,8 +78,10 @@
         if (isGloss) {
           node = el('div', { class: 'item' }, el('dl', { style: 'margin:0' }, el('dt', {}, it.term), el('dd', {}, it.def)));
         } else {
+          const main = codeBlock(it.cmd, { plain: !!s.lang });
+          main.insertBefore(favButton({ t: entry.id, s: s.id, c: it.cmd }), main.querySelector('.copy'));
           node = el('article', { class: 'item' },
-            codeBlock(it.cmd, { plain: !!s.lang }),
+            main,
             it.desc && el('p', { class: 'desc' }, it.desc),
             it.ej && el('div', { class: 'ej' }, el('span', { class: 'lbl' }, 'Salida de ejemplo'), el('pre', {}, it.ej)),
             it.alias && el('div', { class: 'alias' }, el('span', { class: 'lbl' }, 'Alias'), codeBlock(it.alias, { small: true })),

@@ -119,5 +119,83 @@
 
   const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-  window.DC = { el, copyText, codeBlock, loadScript, logoFor, initTheme, norm };
+  /* ---------- favoritos ----------
+     Se guardan solo en el localStorage de este navegador: no se comparten ni viajan con el enlace.
+     Cada favorito es { t: id de la guía, s: id de la sección, c: comando tal como está en la guía }. */
+  const STAR_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>';
+  const STAR_ON = STAR_OFF.replace('fill="none"', 'fill="currentColor"');
+  const FAV_KEY = 'dc-favs', FAV_MAX = 200;
+  const favId = f => f.t + '|' + f.s + '|' + f.c;
+  const validFav = f => !!f && typeof f.t === 'string' && typeof f.s === 'string' && typeof f.c === 'string' &&
+    f.t !== '' && f.c !== '' && f.t.length <= 60 && f.s.length <= 120 && f.c.length <= 2000;
+  const cleanFav = f => ({ t: f.t, s: f.s, c: f.c });
+
+  function favRead() {
+    try {
+      const a = JSON.parse(localStorage.getItem(FAV_KEY));
+      return Array.isArray(a) ? a.filter(validFav).slice(0, FAV_MAX).map(cleanFav) : [];
+    } catch (e) { return []; }
+  }
+
+  let favList = favRead();
+  const favListeners = [];
+  const favNotify = () => favListeners.slice().forEach(fn => fn());
+  function favSave() {
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(favList)); } catch (e) { /* sin almacenamiento: quedan solo en esta pestaña */ }
+    favNotify();
+  }
+  // Cambios hechos desde otra pestaña del mismo navegador
+  window.addEventListener('storage', e => { if (e.key === FAV_KEY) { favList = favRead(); favNotify(); } });
+
+  const favs = {
+    max: FAV_MAX,
+    list: () => favList.slice(),
+    has: f => favList.some(x => favId(x) === favId(f)),
+    onChange: fn => { favListeners.push(fn); },
+    // devuelve true si quedó marcado, false si se quitó, null si se alcanzó el límite
+    toggle(f) {
+      const i = favList.findIndex(x => favId(x) === favId(f));
+      if (i >= 0) { favList.splice(i, 1); favSave(); return false; }
+      if (favList.length >= FAV_MAX) return null;
+      favList.unshift(cleanFav(f)); favSave(); return true;
+    },
+    exportText: () => JSON.stringify({ v: 1, favs: favList }),
+    // acepta el JSON exportado (o un arreglo); devuelve { added, skipped } o null si el texto no sirve
+    importText(text) {
+      let data;
+      try { data = JSON.parse(text); } catch (e) { return null; }
+      const arr = Array.isArray(data) ? data : data && Array.isArray(data.favs) ? data.favs : null;
+      if (!arr) return null;
+      let added = 0, skipped = 0;
+      for (const f of arr) {
+        if (!validFav(f)) { skipped++; continue; }
+        if (favList.some(x => favId(x) === favId(f))) continue;
+        if (favList.length >= FAV_MAX) { skipped++; continue; }
+        favList.push(cleanFav(f)); added++;
+      }
+      if (added) favSave();
+      return { added, skipped };
+    }
+  };
+
+  // Botón de estrella sincronizado con el estado de favoritos (para las páginas de guía)
+  function favButton(f) {
+    const btn = el('button', { class: 'fav', type: 'button' });
+    const paint = () => {
+      const on = favs.has(f);
+      btn.classList.toggle('on', on);
+      btn.innerHTML = on ? STAR_ON : STAR_OFF;
+      btn.title = on ? 'Quitar de favoritos' : 'Marcar como favorito';
+      btn.setAttribute('aria-label', btn.title);
+      btn.setAttribute('aria-pressed', String(on));
+    };
+    btn.addEventListener('click', () => {
+      if (favs.toggle(f) === null) btn.title = 'Límite de ' + FAV_MAX + ' favoritos alcanzado';
+    });
+    favs.onChange(paint);
+    paint();
+    return btn;
+  }
+
+  window.DC = { el, copyText, codeBlock, loadScript, logoFor, initTheme, norm, favs, favButton, icons: { starOn: STAR_ON, starOff: STAR_OFF } };
 })();
