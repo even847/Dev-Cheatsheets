@@ -1,5 +1,5 @@
 (function () {
-  const { el, codeBlock, loadScript, logoFor, initTheme, norm, favButton } = window.DC;
+  const { el, codeBlock, loadScript, logoFor, initTheme, norm, favButton, favs, icons } = window.DC;
   const params = new URLSearchParams(location.search);
   const id = params.get('t');
   const entry = (window.REGISTRY || []).find(t => t.id === id);
@@ -57,14 +57,18 @@
     );
 
     const secEls = [], tocLinks = [];
+    const FAV_ID = 'mis-favoritos';
+    let showFavs = false; // vista "Favoritos" de esta guía (no es una sección de los datos)
 
     function apply() {
       document.body.classList.toggle('searching', searching);
-      secEls.forEach((s, i) => s.sec.classList.toggle('off', !searching && i !== cur));
-      if (!searching) tocLinks.forEach((l, j) => l.classList.toggle('active', j === cur));
+      secEls.forEach((s, i) => s.sec.classList.toggle('off', showFavs || (!searching && i !== cur)));
+      favSec.classList.toggle('off', !showFavs);
+      favLink.classList.toggle('active', showFavs);
+      if (!searching) tocLinks.forEach((l, j) => l.classList.toggle('active', !showFavs && j === cur));
     }
     function go(i) {
-      cur = i; apply();
+      showFavs = false; cur = i; apply();
       try { history.replaceState(null, '', '#' + secEls[i].sec.id); } catch (e) { /* ignorar */ }
       secEls[i].sec.scrollIntoView();
     }
@@ -122,6 +126,55 @@
       tocLinks.push(a);
     });
 
+    /* ----- vista "Favoritos" de esta guía: solo los comandos marcados aquí ----- */
+    const favCount = el('span', { class: 'n' }, '0');
+    const favLink = el('a', { href: '#' + FAV_ID, class: 'favlink' },
+      el('span', {}, el('span', { class: 'star', html: icons.starOn }), 'Favoritos'), favCount);
+    toc.querySelector('h2').after(favLink);
+    const favList = el('div', { class: 'items' });
+    const favSecCount = el('span', { class: 'count' });
+    const favSec = el('section', { class: 'sec off', id: FAV_ID },
+      el('h2', {}, el('span', { class: 'num' }, '★'), 'Favoritos', favSecCount),
+      el('p', { class: 'intro' }, 'Tus comandos marcados con ★ en esta guía. Se guardan solo en este navegador.'),
+      favList);
+    content.append(favSec);
+
+    function favItem(f) {
+      const idx = data.secciones.findIndex(s => s.id === f.s);
+      const sec = data.secciones[idx];
+      const it = sec && sec.items.find(i => i.cmd === f.c);
+      const code = codeBlock(f.c, { plain: !!(sec && sec.lang) });
+      const remove = el('button', { class: 'fav on', type: 'button', title: 'Quitar de favoritos', 'aria-label': 'Quitar de favoritos', html: icons.starOn });
+      remove.addEventListener('click', () => favs.toggle(f));
+      code.insertBefore(remove, code.querySelector('.copy'));
+      const where = sec ? el('button', { type: 'button', class: 'fav-where' }, sec.titulo + ' →') : null;
+      if (where) where.addEventListener('click', () => go(idx));
+      return el('article', { class: 'item' }, code,
+        it && it.desc ? el('p', { class: 'desc' }, it.desc) : null,
+        it ? null : el('p', { class: 'desc' }, 'Este comando ya no está en la guía.'),
+        where);
+    }
+    function renderGuideFavs() {
+      const mine = favs.list().filter(f => f.t === entry.id);
+      favCount.textContent = String(mine.length);
+      favSecCount.textContent = mine.length + (mine.length === 1 ? ' entrada' : ' entradas');
+      favList.replaceChildren(...(mine.length ? mine.map(favItem)
+        : [el('div', { class: 'empty', style: 'margin-top:14px' }, 'Aún no marcaste favoritos en esta guía. Usa la ★ junto a un comando para guardarlo aquí.')]));
+    }
+    function goFavs() {
+      if (searching) { searchInput.value = ''; filter(); }
+      showFavs = true; apply();
+      try { history.replaceState(null, '', '#' + FAV_ID); } catch (e) { /* ignorar */ }
+      favSec.scrollIntoView();
+    }
+    favLink.addEventListener('click', e => {
+      e.preventDefault();
+      document.body.classList.remove('toc-open');
+      goFavs();
+    });
+    favs.onChange(renderGuideFavs);
+    renderGuideFavs();
+
     const empty = el('div', { class: 'empty hidden', hidden: true }, 'Nada coincide con tu búsqueda.');
     content.append(empty);
 
@@ -130,6 +183,7 @@
       const q = norm(searchInput.value.trim());
       const words = q.split(/\s+/).filter(Boolean);
       searching = words.length > 0;
+      if (searching) showFavs = false; // al buscar se muestran las coincidencias de toda la guía
       let shown = 0;
       secEls.forEach((s, i) => {
         let vis = 0;
@@ -172,14 +226,16 @@
     const idxFromHash = () => secEls.findIndex(s => s.sec.id === decodeURIComponent(location.hash.slice(1)));
     const h0 = location.hash ? idxFromHash() : -1;
     if (h0 >= 0) cur = h0;
+    if (decodeURIComponent(location.hash.slice(1)) === FAV_ID) showFavs = true;
     apply();
     if (h0 >= 0) requestAnimationFrame(() => secEls[h0].sec.scrollIntoView());
 
     // Botón atrás / enlaces con #sección estando ya en la página
     window.addEventListener('hashchange', () => {
+      if (decodeURIComponent(location.hash.slice(1)) === FAV_ID) { showFavs = true; apply(); favSec.scrollIntoView(); return; }
       const i = idxFromHash();
       if (i < 0) return;
-      cur = i; apply(); secEls[i].sec.scrollIntoView();
+      showFavs = false; cur = i; apply(); secEls[i].sec.scrollIntoView();
     });
   }
 

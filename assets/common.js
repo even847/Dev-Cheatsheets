@@ -18,7 +18,7 @@
       else if (k === 'html') n.innerHTML = v;
       else n.setAttribute(k, v === true ? '' : v);
     }
-    for (const c of kids.flat()) if (c != null) n.append(c.nodeType ? c : document.createTextNode(c));
+    for (const c of kids.flat()) if (c != null && c !== false) n.append(c.nodeType ? c : document.createTextNode(c));
     return n;
   }
 

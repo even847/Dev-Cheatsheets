@@ -19,13 +19,17 @@
 <section class="hero">
   <h1>Comandos a un clic.</h1>
   <p>Elige una herramienta, salta a la sección que necesitas y copia el comando. Sin buscar en PDFs.</p>
-  <div class="search">
-    <input id="q" type="search" placeholder="Buscar en todas las guías…" aria-label="Buscar en todas las guías" autocomplete="off">
-    <kbd>/</kbd>
+  <div class="hero-row">
+    <div class="search">
+      <input id="q" type="search" placeholder="Buscar en todas las guías…" aria-label="Buscar en todas las guías" autocomplete="off">
+      <kbd>/</kbd>
+    </div>
+    <a class="favbtn" href="favoritos.html" title="Ver tus comandos favoritos">
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>
+      <span>Favoritos</span><span class="badge" id="fav-count">0</span>
+    </a>
   </div>
 </section>
-
-<section id="favs" class="favs" aria-label="Favoritos"></section>
 
 <div id="grid" class="grid"></div>
 <div id="results" class="results" hidden></div>
