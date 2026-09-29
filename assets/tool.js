@@ -92,6 +92,7 @@
             it.tip && el('div', { class: 'tip' }, it.tip),
             it.warn && el('div', { class: 'warn' }, it.warn));
         }
+        node._cmd = it.cmd || it.term;
         node._text = norm([it.cmd, it.desc, it.alias, it.ej, it.tip, it.term, it.def].filter(Boolean).join(' '));
         list.append(node);
         return node;
@@ -126,6 +127,22 @@
       tocLinks.push(a);
     });
 
+    // Centra un comando en pantalla y lo ilumina unos segundos, para ubicarlo dentro de su sección
+    let flashTimer;
+    function flash(cmd, sid) {
+      const s = secEls.find(x => x.sec.id === sid) || secEls.find(x => x.itemEls.some(n => n._cmd === cmd));
+      const node = s && s.itemEls.find(n => n._cmd === cmd);
+      if (!node) return;
+      const i = secEls.indexOf(s);
+      if (!searching && (showFavs || i !== cur)) { showFavs = false; cur = i; apply(); } // la sección tiene que estar visible
+      document.querySelectorAll('.item.flash').forEach(n => n.classList.remove('flash'));
+      void node.offsetWidth; // reinicia la animación si ya estaba iluminado
+      node.classList.add('flash');
+      node.scrollIntoView({ block: 'center' });
+      clearTimeout(flashTimer);
+      flashTimer = setTimeout(() => node.classList.remove('flash'), 5000);
+    }
+
     /* ----- vista "Favoritos" de esta guía: solo los comandos marcados aquí ----- */
     const favCount = el('span', { class: 'n' }, '0');
     const favLink = el('a', { href: '#' + FAV_ID, class: 'favlink' },
@@ -148,7 +165,7 @@
       remove.addEventListener('click', () => favs.toggle(f));
       code.insertBefore(remove, code.querySelector('.copy'));
       const where = sec ? el('button', { type: 'button', class: 'fav-where' }, sec.titulo + ' →') : null;
-      if (where) where.addEventListener('click', () => go(idx));
+      if (where) where.addEventListener('click', () => { go(idx); flash(f.c, f.s); });
       return el('article', { class: 'item' }, code,
         it && it.desc ? el('p', { class: 'desc' }, it.desc) : null,
         it ? null : el('p', { class: 'desc' }, 'Este comando ya no está en la guía.'),
@@ -229,6 +246,15 @@
     if (decodeURIComponent(location.hash.slice(1)) === FAV_ID) showFavs = true;
     apply();
     if (h0 >= 0) requestAnimationFrame(() => secEls[h0].sec.scrollIntoView());
+
+    // Enlaces con ?hl=<comando> (favoritos, resultados de búsqueda): ilumina ese comando
+    const hl = params.get('hl');
+    if (hl) {
+      requestAnimationFrame(() => {
+        flash(hl, h0 >= 0 ? secEls[h0].sec.id : '');
+        try { history.replaceState(null, '', location.pathname + '?t=' + encodeURIComponent(entry.id) + location.hash); } catch (e) { /* ignorar */ }
+      });
+    }
 
     // Botón atrás / enlaces con #sección estando ya en la página
     window.addEventListener('hashchange', () => {

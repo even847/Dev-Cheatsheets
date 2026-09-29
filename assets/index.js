@@ -51,7 +51,7 @@
     const shown = hits.slice(0, 60);
     results.replaceChildren(
       el('h2', {}, hits.length + ' resultado' + (hits.length === 1 ? '' : 's') + (hits.length > shown.length ? ' (mostrando ' + shown.length + ')' : '')),
-      ...shown.map(h => el('a', { class: 'hit', href: 'tool.html?t=' + h.tool.id + '#' + h.sid },
+      ...shown.map(h => el('a', { class: 'hit', href: 'tool.html?t=' + h.tool.id + '&hl=' + encodeURIComponent(h.cmd) + '#' + h.sid },
         el('code', {}, h.cmd),
         el('small', {}, el('span', { class: 'tag', style: 'color:' + h.tool.color }, h.tool.nombre), ' › ' + h.seccion + (h.desc ? ' — ' + h.desc : '')))));
   }

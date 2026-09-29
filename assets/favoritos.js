@@ -21,7 +21,7 @@
   function row(f) {
     const { sec, it } = lookup(f);
     const detail = [sec && sec.titulo, it && it.desc].filter(Boolean).join(' — ');
-    const link = el('a', { class: 'fav-link', href: 'tool.html?t=' + encodeURIComponent(f.t) + '#' + encodeURIComponent(f.s) },
+    const link = el('a', { class: 'fav-link', href: 'tool.html?t=' + encodeURIComponent(f.t) + '&hl=' + encodeURIComponent(f.c) + '#' + encodeURIComponent(f.s) },
       el('code', {}, f.c),
       detail && el('small', {}, detail));
     const copy = el('button', { class: 'fav-copy', type: 'button' }, 'Copiar');
