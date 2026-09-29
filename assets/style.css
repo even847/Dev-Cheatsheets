@@ -123,20 +123,24 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); box-sha
 .hit .tag { color: var(--accent); font-weight: 600; }
 
 /* ---------- favoritos ---------- */
-.favs { max-width: 1040px; margin: 0 auto; padding: 16px 20px 0; }
-.favs-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
-.favs-box summary {
-  display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; font-weight: 700; list-style: none;
+.hero-row { display: flex; align-items: center; gap: 12px; margin-top: 26px; }
+.hero-row .search { flex: 1; max-width: 520px; margin-top: 0; }
+.favbtn {
+  flex: none; height: 40px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--surface); text-decoration: none; font-weight: 600;
 }
-.favs-box summary::-webkit-details-marker { display: none; }
-.favs-box summary::after { content: "▾"; margin-left: auto; color: var(--muted); transition: transform .15s; }
-.favs-box:not([open]) summary::after { transform: rotate(-90deg); }
-.favs-box .star { width: 18px; height: 18px; color: #e8a33d; display: grid; }
-.favs-box .star svg { width: 100%; height: 100%; }
-.favs-box .count { font: 600 .78rem var(--mono); color: var(--muted); background: var(--surface-2); border-radius: 999px; padding: 1px 8px; }
-.favs-body { padding: 0 16px 16px; }
+.favbtn svg { width: 16px; height: 16px; color: #e8a33d; }
+.favbtn:hover { border-color: #e8a33d; }
+.badge { font: 600 .78rem var(--mono); color: var(--muted); background: var(--surface-2); border-radius: 999px; padding: 1px 8px; }
+
+/* página de favoritos */
+.favpage { max-width: 1040px; margin: 0 auto; padding: 28px 20px 80px; }
+.favpage .tool-head .logo { color: #e8a33d; }
+.fav-group { margin-top: 32px; }
+.fav-group h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 1.25rem; letter-spacing: -.01em; }
+.fav-group h2 .logo { width: 26px; height: 26px; color: var(--accent); flex: none; }
 .fav-list { display: grid; gap: 8px; }
-.fav-row { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
+.fav-row { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
 .fav-row:hover { border-color: var(--accent); }
 .fav-link { flex: 1; min-width: 0; text-decoration: none; }
 .fav-link code { font: 13.5px var(--mono); word-break: break-all; }
@@ -159,6 +163,14 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); box-sha
   border: 1px solid var(--border); background: var(--bg); color: var(--text);
 }
 .favs-msg { margin: 8px 0 0; min-height: 1.3em; font-size: .88rem; color: var(--muted); }
+
+/* vista de favoritos dentro de una guía */
+.toc a.favlink .star { display: inline-block; width: 14px; height: 14px; margin-right: 8px; vertical-align: -2px; color: #e8a33d; }
+.toc a.favlink .star svg { width: 100%; height: 100%; display: block; }
+.fav-where {
+  margin-top: 10px; padding: 0; border: 0; background: none; color: var(--accent); font-size: .85rem; font-weight: 600;
+}
+.fav-where:hover { text-decoration: underline; }
 
 /* estrella dentro de cada comando */
 .fav {
@@ -297,7 +309,9 @@ section.sec > h2 .count { margin-left: auto; font: 500 .8rem var(--sans); color:
 }
 @media (max-width: 560px) {
   .topbar { padding: 0 12px; gap: 8px; }
-  .layout, .hero, .grid, .results, .favs { padding-left: 16px; padding-right: 16px; }
+  .layout, .hero, .grid, .results, .favpage { padding-left: 16px; padding-right: 16px; }
+  .hero-row { flex-wrap: wrap; }
+  .hero-row .search { flex-basis: 100%; max-width: none; }
   .brand small { display: none; }
   .copy span { display: none; }
 }
