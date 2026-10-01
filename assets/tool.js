@@ -1,5 +1,5 @@
 (function () {
-  const { el, codeBlock, loadScript, logoFor, initTheme, norm, favButton, favs, icons } = window.DC;
+  const { el, codeBlock, loadScript, logoFor, initTheme, norm, favButton, favs, icons, copyText } = window.DC;
   const params = new URLSearchParams(location.search);
   const id = params.get('t');
   const entry = (window.REGISTRY || []).find(t => t.id === id);
@@ -153,28 +153,29 @@
     const favLink = el('a', { href: '#' + FAV_ID, class: 'favlink' },
       el('span', {}, el('span', { class: 'star', html: icons.starOn }), 'Favoritos'), favCount);
     toc.querySelector('h2').after(favLink);
-    const favList = el('div', { class: 'items' });
+    const favList = el('div', { class: 'fav-list', style: 'margin-top:14px' });
     const favSecCount = el('span', { class: 'count' });
     const favSec = el('section', { class: 'sec off', id: FAV_ID },
       el('h2', {}, el('span', { class: 'num' }, '★'), 'Favoritos', favSecCount),
-      el('p', { class: 'intro' }, 'Tus comandos marcados con ★ en esta guía. Se guardan solo en este navegador.'),
+      el('p', { class: 'intro' }, 'Tus comandos marcados con ★ en esta guía. Haz clic en uno para ir a su lugar. Se guardan solo en este navegador.'),
       favList);
     content.append(favSec);
 
+    // Solo el comando: al hacer clic lleva a su lugar en la guía y lo ilumina
     function favItem(f) {
       const idx = data.secciones.findIndex(s => s.id === f.s);
-      const sec = data.secciones[idx];
-      const it = sec && sec.items.find(i => i.cmd === f.c);
-      const code = codeBlock(f.c, { plain: !!(sec && sec.lang) });
+      const link = el('a', { class: 'fav-link', href: '#' + encodeURIComponent(f.s), title: 'Ir a este comando en la guía' }, el('code', {}, f.c));
+      link.addEventListener('click', e => { e.preventDefault(); if (idx >= 0) { go(idx); flash(f.c, f.s); } });
+      const copy = el('button', { class: 'fav-copy', type: 'button' }, 'Copiar');
+      let timer;
+      copy.addEventListener('click', async () => {
+        copy.textContent = (await copyText(f.c)) ? '¡Copiado!' : 'Error';
+        clearTimeout(timer);
+        timer = setTimeout(() => { copy.textContent = 'Copiar'; }, 1400);
+      });
       const remove = el('button', { class: 'fav on', type: 'button', title: 'Quitar de favoritos', 'aria-label': 'Quitar de favoritos', html: icons.starOn });
       remove.addEventListener('click', () => favs.toggle(f));
-      code.insertBefore(remove, code.querySelector('.copy'));
-      const where = sec ? el('button', { type: 'button', class: 'fav-where' }, sec.titulo + ' →') : null;
-      if (where) where.addEventListener('click', () => { go(idx); flash(f.c, f.s); });
-      return el('article', { class: 'item' }, code,
-        it && it.desc ? el('p', { class: 'desc' }, it.desc) : null,
-        it ? null : el('p', { class: 'desc' }, 'Este comando ya no está en la guía.'),
-        where);
+      return el('div', { class: 'fav-row' }, link, copy, remove);
     }
     function renderGuideFavs() {
       const mine = favs.list().filter(f => f.t === entry.id);

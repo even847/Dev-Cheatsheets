@@ -159,13 +159,8 @@
       if (favList.length >= FAV_MAX) return null;
       favList.unshift(cleanFav(f)); favSave(); return true;
     },
-    exportText: () => JSON.stringify({ v: 1, favs: favList }),
-    // acepta el JSON exportado (o un arreglo); devuelve { added, skipped } o null si el texto no sirve
-    importText(text) {
-      let data;
-      try { data = JSON.parse(text); } catch (e) { return null; }
-      const arr = Array.isArray(data) ? data : data && Array.isArray(data.favs) ? data.favs : null;
-      if (!arr) return null;
+    // agrega varios favoritos { t, s, c } sin duplicar; devuelve { added, skipped }
+    addMany(arr) {
       let added = 0, skipped = 0;
       for (const f of arr) {
         if (!validFav(f)) { skipped++; continue; }
@@ -175,6 +170,13 @@
       }
       if (added) favSave();
       return { added, skipped };
+    },
+    // acepta un JSON ({ favs: [...] } o un arreglo); devuelve { added, skipped } o null si el texto no sirve
+    importText(text) {
+      let data;
+      try { data = JSON.parse(text); } catch (e) { return null; }
+      const arr = Array.isArray(data) ? data : data && Array.isArray(data.favs) ? data.favs : null;
+      return arr ? favs.addMany(arr) : null;
     }
   };
 
