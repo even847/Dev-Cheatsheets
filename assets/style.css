@@ -167,10 +167,7 @@ a.card:hover { transform: translateY(-3px); border-color: var(--accent); box-sha
 /* vista de favoritos dentro de una guía */
 .toc a.favlink .star { display: inline-block; width: 14px; height: 14px; margin-right: 8px; vertical-align: -2px; color: #e8a33d; }
 .toc a.favlink .star svg { width: 100%; height: 100%; display: block; }
-.fav-where {
-  margin-top: 10px; padding: 0; border: 0; background: none; color: var(--accent); font-size: .85rem; font-weight: 600;
-}
-.fav-where:hover { text-decoration: underline; }
+.fav-link:hover code { color: var(--accent); }
 
 /* estrella dentro de cada comando */
 .fav {
