@@ -53,6 +53,12 @@
     '<path d="M17 46V20l15 17 15-17v26" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
   );
 
+  // Gradle: círculo con una G abierta y una flecha
+  const gradle = svg(
+    '<circle cx="32" cy="32" r="27" fill="currentColor"/>' +
+    '<path d="M44 24a14 14 0 1 0 2 12H32" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
+  );
+
   // Node.js: hexágono con una N
   const hex = Array.from({ length: 6 }, (_, i) => pt(28, i, 6, Math.PI / 6).map(v => v.toFixed(1)).join(',')).join(' ');
   const node = svg(
@@ -78,5 +84,5 @@
     '<g fill="#fff"><circle cx="24" cy="21" r="4.5"/><circle cx="24" cy="43" r="4.5"/><circle cx="40" cy="42" r="4.5"/></g>'
   );
 
-  window.LOGOS = { docker, kubernetes, git, gh, scoop, maven, node, powershell, generico };
+  window.LOGOS = { docker, kubernetes, git, gh, scoop, maven, gradle, node, powershell, generico };
 })();
