@@ -53,6 +53,14 @@
     '<path d="M17 46V20l15 17 15-17v26" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
   );
 
+  // Gradle: elefante (cuerpo, trompa enroscada, oreja y ojo)
+  const gradle = svg(
+    '<path d="M16 32C16 23 26 18 38 18c13 0 20 9 20 22v14H48v-8h-8v8H30v-8h-6v8H16z" fill="currentColor"/>' +
+    '<path d="M15 36C5 32 6 14 20 12c7-1 11 4 9 9" stroke="currentColor" stroke-width="7" stroke-linecap="round" fill="none"/>' +
+    '<path d="M28 28c6 2 8 8 4 13" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".85"/>' +
+    '<circle cx="23" cy="29" r="2" fill="#fff"/>'
+  );
+
   // Node.js: hexágono con una N
   const hex = Array.from({ length: 6 }, (_, i) => pt(28, i, 6, Math.PI / 6).map(v => v.toFixed(1)).join(',')).join(' ');
   const node = svg(
@@ -78,5 +86,5 @@
     '<g fill="#fff"><circle cx="24" cy="21" r="4.5"/><circle cx="24" cy="43" r="4.5"/><circle cx="40" cy="42" r="4.5"/></g>'
   );
 
-  window.LOGOS = { docker, kubernetes, git, gh, scoop, maven, node, powershell, generico };
+  window.LOGOS = { docker, kubernetes, git, gh, scoop, maven, gradle, node, powershell, generico };
 })();

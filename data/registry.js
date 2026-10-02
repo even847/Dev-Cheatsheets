@@ -45,6 +45,13 @@ window.REGISTRY = [
     estado: 'listo'
   },
   {
+    id: 'gradle',
+    nombre: 'Gradle',
+    descripcion: 'Tareas, dependencias, wrapper, tests y multi-proyecto.',
+    color: '#1d8fa8',
+    estado: 'listo'
+  },
+  {
     id: 'node',
     nombre: 'Node.js',
     descripcion: 'nvm, node y npm: versiones, paquetes y scripts.',
