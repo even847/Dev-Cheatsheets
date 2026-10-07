@@ -56,6 +56,54 @@
         el('small', {}, el('span', { class: 'tag', style: 'color:' + h.tool.color }, h.tool.nombre), ' › ' + h.seccion + (h.desc ? ' — ' + h.desc : '')))));
   }
   input.addEventListener('input', search);
+
+  /* ----- perfil privado: la card y sus comandos solo existen mientras está desbloqueado ----- */
+  const lockBtn = document.getElementById('lock');
+  const ICON_LOCKED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  const ICON_UNLOCKED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>';
+  let privCard = null;
+
+  function paintLock() {
+    const open = !!privCard;
+    lockBtn.innerHTML = open ? ICON_UNLOCKED : ICON_LOCKED;
+    lockBtn.classList.toggle('on', open);
+    lockBtn.title = open ? 'Bloquear perfil privado' : 'Perfil privado';
+    lockBtn.setAttribute('aria-label', lockBtn.title);
+  }
+  function showPrivate(p) {
+    const t = p.entry;
+    let n = 0;
+    p.data.secciones.forEach(s => s.items.forEach(it => {
+      n++;
+      const cmd = it.cmd || it.term, desc = it.desc || it.def || '';
+      index.push({ tool: t, seccion: s.titulo, sid: s.id, cmd, desc, text: norm([cmd, desc, it.alias].filter(Boolean).join(' ')) });
+    }));
+    privCard = el('a', { class: 'card', href: 'tool.html?t=' + t.id, style: '--accent:' + t.color },
+      el('div', { class: 'logo', html: logoFor(t.id) }),
+      el('h2', {}, t.nombre),
+      el('p', {}, t.descripcion),
+      el('div', { class: 'meta' }, el('span', { class: 'pill' }, 'Privado'), p.data.secciones.length + ' secciones · ' + n + ' entradas'));
+    grid.prepend(privCard);
+    paintLock(); search();
+  }
+  function hidePrivate() {
+    if (privCard) privCard.remove();
+    privCard = null;
+    for (let i = index.length - 1; i >= 0; i--) if (index[i].tool.id === 'privado') index.splice(i, 1);
+    paintLock(); search();
+  }
+  lockBtn.addEventListener('click', async () => {
+    if (privCard) { DC.priv.lock(); hidePrivate(); return; }
+    if (await DC.priv.prompt()) showPrivate(await DC.priv.merged());
+  });
+  // El botón solo aparece si el sitio trae contenido privado; si ya lo desbloqueaste en esta pestaña, vuelve solo
+  DC.priv.ready().then(async has => {
+    if (!has) return;
+    lockBtn.hidden = false; paintLock();
+    const p = await DC.priv.merged();
+    if (p) showPrivate(p);
+  });
+
   document.addEventListener('keydown', e => {
     if (e.key === '/' && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); input.focus(); }
   });
