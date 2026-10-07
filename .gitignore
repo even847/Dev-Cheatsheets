@@ -3,6 +3,9 @@ fuentes/
 *.docx
 *.pdf
 
+# Contenido privado en claro: solo va al repo la versión cifrada (data/private.enc.js)
+private/
+
 # Pruebas temporales y basura del sistema
 tool-test.html
 Thumbs.db

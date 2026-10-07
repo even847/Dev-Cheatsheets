@@ -2,7 +2,8 @@
   const { el, codeBlock, loadScript, logoFor, initTheme, norm, favButton, favs, icons, copyText } = window.DC;
   const params = new URLSearchParams(location.search);
   const id = params.get('t');
-  const entry = (window.REGISTRY || []).find(t => t.id === id);
+  let entry = (window.REGISTRY || []).find(t => t.id === id);
+  let priv = null; // contenido descifrado de la guía privada (no está en el registro público)
 
   const layout = document.getElementById('layout');
   const toc = document.getElementById('toc');
@@ -15,31 +16,69 @@
     layout.replaceChildren(el('main', { style: 'grid-column:1/-1' },
       el('div', { class: 'empty' }, msg, ' ', el('a', { href: 'index.html' }, 'Volver al inicio'))));
   }
-  if (!entry) return fail('No existe esa guía.');
 
-  document.documentElement.style.setProperty('--accent', entry.color);
-  document.title = entry.nombre + ' · Dev-Cheatsheets';
-  document.getElementById('crumb').textContent = entry.nombre;
-  document.getElementById('crumb-logo').innerHTML = logoFor(entry.id);
-
-  if (entry.estado !== 'listo') {
-    document.querySelector('.topbar .search').hidden = true;
-    document.getElementById('toc-toggle').hidden = true;
-    layout.replaceChildren(el('main', { class: 'construction' },
-      el('div', { class: 'logo', html: logoFor(entry.id) }),
-      el('h1', {}, entry.nombre),
-      el('p', {}, entry.descripcion),
-      el('span', { class: 'pill big' }, 'En construcción'),
-      el('p', { class: 'hint' }, 'Esta guía todavía no está lista. Vuelve pronto.'),
-      el('a', { class: 'navbtn', href: 'index.html' }, '← Volver a todas las guías')));
-    return;
+  // Etiqueta "Sin publicar" + botón para borrar ese comando (solo existe en este navegador)
+  function localRow(s, it) {
+    const del = el('button', { type: 'button', class: 'fav-copy', title: 'Borrar este comando' }, 'Eliminar');
+    del.addEventListener('click', async () => { await DC.priv.removeExtra(s.id, it.cmd); location.reload(); });
+    return el('div', { class: 'local-row' }, el('span', { class: 'pill local' }, 'Sin publicar'), del);
   }
 
-  loadScript('data/' + entry.id + '.js').then(() => {
-    const data = window.CHEATSHEETS && window.CHEATSHEETS[entry.id];
-    if (!data) throw new Error('El archivo de datos no define CHEATSHEETS.' + entry.id);
-    render(data);
-  }).catch(e => fail(e.message));
+  function start() {
+    if (!entry) return fail('No existe esa guía.');
+
+    document.documentElement.style.setProperty('--accent', entry.color);
+    document.title = entry.nombre + ' · Dev-Cheatsheets';
+    document.getElementById('crumb').textContent = entry.nombre;
+    document.getElementById('crumb-logo').innerHTML = logoFor(entry.id);
+
+    if (entry.estado !== 'listo') {
+      document.querySelector('.topbar .search').hidden = true;
+      document.getElementById('toc-toggle').hidden = true;
+      layout.replaceChildren(el('main', { class: 'construction' },
+        el('div', { class: 'logo', html: logoFor(entry.id) }),
+        el('h1', {}, entry.nombre),
+        el('p', {}, entry.descripcion),
+        el('span', { class: 'pill big' }, 'En construcción'),
+        el('p', { class: 'hint' }, 'Esta guía todavía no está lista. Vuelve pronto.'),
+        el('a', { class: 'navbtn', href: 'index.html' }, '← Volver a todas las guías')));
+      return;
+    }
+
+    if (priv) return render(priv.data);
+    loadScript('data/' + entry.id + '.js').then(() => {
+      const data = window.CHEATSHEETS && window.CHEATSHEETS[entry.id];
+      if (!data) throw new Error('El archivo de datos no define CHEATSHEETS.' + entry.id);
+      render(data);
+    }).catch(e => fail(e.message));
+  }
+
+  if (!entry && id === 'privado') {
+    // Guía privada: no sale en el registro; hay que desbloquearla con la contraseña
+    document.title = 'Dev-Cheatsheets';
+    document.querySelector('.topbar .search').hidden = true;
+    DC.priv.ready().then(async has => {
+      if (!has) return fail('No existe esa guía.');
+      const p = (await DC.priv.get()) || (await DC.priv.prompt());
+      if (!p) { location.replace('index.html'); return; }
+      document.querySelector('.topbar .search').hidden = false;
+      priv = await DC.priv.merged(); entry = priv.entry; start();
+      // Agregar comandos nuevos y exportar los pendientes (se publican con un solo commit)
+      const addBtn = document.getElementById('priv-add'), expBtn = document.getElementById('priv-export');
+      const pend = await DC.priv.pending();
+      addBtn.hidden = false;
+      if (pend.length) { expBtn.textContent = 'Sin publicar (' + pend.length + ')'; expBtn.hidden = false; }
+      addBtn.addEventListener('click', async () => { if (await DC.priv.addDialog(priv.data.secciones)) location.reload(); });
+      expBtn.addEventListener('click', async () => { if (await DC.priv.pendingDialog(pend)) location.reload(); });
+      // Bloquear y salir: borra la clave de esta pestaña y vuelve al home sin la card privada
+      const lockBtn = document.getElementById('lock');
+      lockBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+      lockBtn.title = 'Bloquear y salir';
+      lockBtn.setAttribute('aria-label', lockBtn.title);
+      lockBtn.hidden = false;
+      lockBtn.addEventListener('click', () => { DC.priv.lock(); location.href = 'index.html'; });
+    });
+  } else start();
 
   // Se muestra una sección a la vez; al buscar se muestran todas las coincidencias.
   let cur = 0, searching = false;
@@ -83,14 +122,15 @@
           node = el('div', { class: 'item' }, el('dl', { style: 'margin:0' }, el('dt', {}, it.term), el('dd', {}, it.def)));
         } else {
           const main = codeBlock(it.cmd, { plain: !!s.lang });
-          main.insertBefore(favButton({ t: entry.id, s: s.id, c: it.cmd }), main.querySelector('.copy'));
+          if (!priv) main.insertBefore(favButton({ t: entry.id, s: s.id, c: it.cmd }), main.querySelector('.copy')); // sin ★ en la guía privada: no deja rastro en localStorage
           node = el('article', { class: 'item' },
             main,
             it.desc && el('p', { class: 'desc' }, it.desc),
             it.ej && el('div', { class: 'ej' }, el('span', { class: 'lbl' }, 'Salida de ejemplo'), el('pre', {}, it.ej)),
             it.alias && el('div', { class: 'alias' }, el('span', { class: 'lbl' }, 'Alias'), codeBlock(it.alias, { small: true })),
             it.tip && el('div', { class: 'tip' }, it.tip),
-            it.warn && el('div', { class: 'warn' }, it.warn));
+            it.warn && el('div', { class: 'warn' }, it.warn),
+            it._local && localRow(s, it));
         }
         node._cmd = it.cmd || it.term;
         node._text = norm([it.cmd, it.desc, it.alias, it.ej, it.tip, it.term, it.def].filter(Boolean).join(' '));
