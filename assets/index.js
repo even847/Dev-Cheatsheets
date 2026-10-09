@@ -67,6 +67,7 @@
     const open = !!privCard;
     lockBtn.innerHTML = open ? ICON_UNLOCKED : ICON_LOCKED;
     lockBtn.classList.toggle('on', open);
+    lockBtn.hidden = !open;
     lockBtn.title = open ? 'Bloquear perfil privado' : 'Perfil privado';
     lockBtn.setAttribute('aria-label', lockBtn.title);
   }
@@ -92,14 +93,24 @@
     for (let i = index.length - 1; i >= 0; i--) if (index[i].tool.id === 'privado') index.splice(i, 1);
     paintLock(); search();
   }
-  lockBtn.addEventListener('click', async () => {
-    if (privCard) { DC.priv.lock(); hidePrivate(); return; }
-    if (await DC.priv.prompt()) showPrivate(await DC.priv.merged());
+  let busy = false;
+  async function toggle() {
+    if (busy) return;
+    busy = true;
+    try {
+      if (privCard) { DC.priv.lock(); hidePrivate(); return; }
+      if (!(await DC.priv.ready())) return;
+      if (await DC.priv.prompt()) showPrivate(await DC.priv.merged());
+    } finally { busy = false; }
+  }
+  lockBtn.addEventListener('click', toggle);
+  // Sin candado a la vista: se desbloquea con Ctrl+Alt+D. El botón solo aparece mientras está desbloqueado, para poder bloquear
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey && e.altKey && !e.shiftKey && e.code === 'KeyD') { e.preventDefault(); toggle(); }
   });
-  // El botón solo aparece si el sitio trae contenido privado; si ya lo desbloqueaste en esta pestaña, vuelve solo
+  // Si ya lo desbloqueaste en esta pestaña, vuelve solo
   DC.priv.ready().then(async has => {
     if (!has) return;
-    lockBtn.hidden = false; paintLock();
     const p = await DC.priv.merged();
     if (p) showPrivate(p);
   });
