@@ -548,8 +548,63 @@ window.CHEATSHEETS.docker = {
           "desc": "Crea un builder Buildx y lo selecciona."
         },
         {
+          "cmd": "docker buildx use <builder>",
+          "desc": "Selecciona el builder Buildx que se usará por defecto en las próximas construcciones."
+        },
+        {
           "cmd": "docker buildx build --platform linux/amd64,linux/arm64 -t <imagen> --push .",
           "desc": "Construye y publica una imagen multi-arquitectura."
+        },
+        {
+          "cmd": "docker buildx build --platform <plataforma> -t <imagen> --load .",
+          "desc": "Construye para una plataforma y deja la imagen en el Docker local.",
+          "warn": "--load no funciona con varias plataformas a la vez; para eso usa --push."
+        },
+        {
+          "cmd": "docker buildx inspect --bootstrap",
+          "desc": "Arranca el builder seleccionado y muestra sus plataformas soportadas."
+        },
+        {
+          "cmd": "docker buildx create --name <builder> --driver docker-container --use",
+          "desc": "Crea un builder con el driver docker-container, necesario para construir multi-arquitectura."
+        },
+        {
+          "cmd": "docker buildx rm <builder>",
+          "desc": "Elimina un builder Buildx."
+        },
+        {
+          "cmd": "docker buildx stop <builder>",
+          "desc": "Detiene un builder Buildx sin eliminarlo."
+        },
+        {
+          "cmd": "docker buildx imagetools inspect <imagen>",
+          "desc": "Muestra el manifiesto de una imagen publicada y las arquitecturas que incluye."
+        },
+        {
+          "cmd": "docker buildx build --cache-from type=registry,ref=<ref> --cache-to type=registry,ref=<ref>,mode=max -t <imagen> .",
+          "desc": "Usa y publica caché de construcción en un registry; útil para compartir caché en CI."
+        },
+        {
+          "cmd": "docker buildx build --output type=local,dest=<carpeta> .",
+          "desc": "Exporta el resultado de la construcción como archivos en una carpeta, sin crear imagen."
+        },
+        {
+          "cmd": "docker buildx bake",
+          "desc": "Construye varios targets definidos en un archivo docker-bake.hcl o en el compose."
+        },
+        {
+          "cmd": "docker buildx du",
+          "desc": "Muestra el uso de disco del caché de construcción del builder."
+        },
+        {
+          "cmd": "docker buildx prune",
+          "desc": "Elimina el caché de construcción del builder seleccionado.",
+          "warn": "Las próximas construcciones pueden tardar más."
+        },
+        {
+          "cmd": "docker run --privileged --rm tonistiigi/binfmt --install all",
+          "desc": "Instala los emuladores QEMU para construir imágenes de otras arquitecturas (ej. arm64 desde amd64).",
+          "warn": "Usa --privileged: ejecútalo solo si confías en la imagen. Docker Desktop ya lo incluye."
         }
       ]
     },
