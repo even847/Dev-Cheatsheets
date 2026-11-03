@@ -6,21 +6,28 @@ window.CHEATSHEETS.kubernetes = {
   meta: { id: 'kubernetes', nombre: 'Kubernetes', subtitulo: 'kubectl, pods, deployments, services y manifiestos' },
   secciones: [
     {
+      id: 'instalar-en-mac-y-linux',
+      titulo: 'Instalar kubectl',
+      intro: 'Elige tu sistema operativo. En macOS y Linux hay varios caminos: gestor de paquetes, binario directo o Homebrew.',
+      items: [
+        { so: 'windows', cmd: 'winget install -e --id Kubernetes.kubectl', desc: 'Windows: instala kubectl.', tip: 'Si usas Docker Desktop con Kubernetes habilitado, kubectl ya viene incluido. Docker Desktop agrega su propio kubectl al PATH: si tienes dos, pon el tuyo antes en el PATH.' },
+        { so: 'windows', cmd: 'choco install kubernetes-cli', desc: 'Windows: instala kubectl con Chocolatey (el paquete se llama kubernetes-cli).', alias: 'scoop install kubectl' },
+        { so: 'windows', cmd: 'curl.exe -LO "https://dl.k8s.io/release/v<version>/bin/windows/amd64/kubectl.exe"', desc: 'Windows: descarga el binario directamente.', tip: 'Después agrega la carpeta donde quedó kubectl.exe a la variable Path. Para ARM64 usa la página de releases de Kubernetes.' },
+        { so: ['macos', 'linux'], cmd: 'brew install kubectl', desc: 'macOS (y Linux con Homebrew): la forma más simple.', alias: 'sudo port install kubectl' },
+        { so: 'macos', cmd: 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/arm64/kubectl"', desc: 'macOS con Apple Silicon: descarga el binario de la última versión estable.', tip: 'En Mac con Intel cambia arm64 por amd64. Luego: chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl' },
+        { so: 'linux', cmd: 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"', desc: 'Linux: descarga el binario de la última versión estable.', tip: 'En ARM64 cambia amd64 por arm64.' },
+        { so: 'linux', cmd: 'sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl', desc: 'Linux: instala el binario descargado para todos los usuarios.', tip: 'Sin acceso root: chmod +x kubectl && mkdir -p ~/.local/bin && mv ./kubectl ~/.local/bin/kubectl, y agrega ~/.local/bin al PATH.' },
+        { so: 'linux', cmd: 'sudo apt-get install -y kubectl', desc: 'Debian y Ubuntu, una vez agregado el repositorio de Kubernetes (pkgs.k8s.io).', tip: 'Antes hay que agregar la clave y el repositorio de la versión que quieras; los pasos exactos están en kubernetes.io/docs/tasks/tools/install-kubectl-linux. Lo mismo aplica a dnf y zypper.' },
+        { so: 'linux', cmd: 'sudo dnf install -y kubectl', desc: 'Fedora/RHEL, una vez agregado el repositorio de Kubernetes.', alias: 'sudo zypper install -y kubectl' },
+        { cmd: 'kubectl version --client', desc: 'Confirma la instalación en cualquier sistema.', tip: 'kubectl debe estar a una versión menor de distancia del cluster: un cliente v1.37 funciona con clusters v1.36, v1.37 y v1.38.' }
+      ]
+    },
+    {
       id: 'empezar-de-cero',
       titulo: 'Empezar de cero',
       tipo: 'pasos',
-      intro: 'Sigue estos pasos en orden, en PowerShell (Windows). En macOS o Linux, instala kubectl con la sección siguiente y continúa desde "kubectl cluster-info". Cada paso indica qué deberías ver si salió bien.',
+      intro: 'Con kubectl ya instalado y verificado (sección anterior), sigue estos pasos en orden; los comandos son los mismos en todos los sistemas. Cada paso indica qué deberías ver si salió bien.',
       items: [
-        {
-          cmd: 'winget install -e --id Kubernetes.kubectl',
-          desc: 'Instala kubectl, el cliente de línea de comandos para hablar con un cluster de Kubernetes.',
-          tip: 'Si usas Docker Desktop con Kubernetes habilitado, kubectl ya viene incluido.'
-        },
-        {
-          cmd: 'kubectl version --client',
-          desc: 'Confirma que kubectl quedó instalado y qué versión es.',
-          ej: 'Client Version: v1.31.0'
-        },
         {
           cmd: 'kubectl cluster-info',
           desc: 'Confirma que kubectl puede conectarse a un cluster y muestra las URLs del control plane.'
@@ -46,20 +53,6 @@ window.CHEATSHEETS.kubernetes = {
           desc: 'Lista los pods del namespace actual y su estado.',
           ej: 'NAME                     READY   STATUS    RESTARTS   AGE\nmi-app-6f9d8c7b8-abcde   1/1     Running   0          12s'
         }
-      ]
-    },
-    {
-      id: 'instalar-en-mac-y-linux',
-      titulo: 'Instalar kubectl en macOS y Linux',
-      intro: 'El paso de "Empezar de cero" instala kubectl en Windows. En macOS y Linux hay tres caminos: gestor de paquetes, binario directo o Homebrew.',
-      items: [
-        { cmd: 'brew install kubectl', desc: 'macOS (y Linux con Homebrew): la forma más simple.', alias: 'sudo port install kubectl' },
-        { cmd: 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/arm64/kubectl"', desc: 'macOS con Apple Silicon: descarga el binario de la última versión estable.', tip: 'En Mac con Intel cambia arm64 por amd64. Luego: chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl' },
-        { cmd: 'curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"', desc: 'Linux: descarga el binario de la última versión estable.', tip: 'En ARM64 cambia amd64 por arm64.' },
-        { cmd: 'sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl', desc: 'Linux: instala el binario descargado para todos los usuarios.', tip: 'Sin acceso root: chmod +x kubectl && mkdir -p ~/.local/bin && mv ./kubectl ~/.local/bin/kubectl, y agrega ~/.local/bin al PATH.' },
-        { cmd: 'sudo apt-get install -y kubectl', desc: 'Debian y Ubuntu, una vez agregado el repositorio de Kubernetes (pkgs.k8s.io).', tip: 'Antes hay que agregar la clave y el repositorio de la versión que quieras; los pasos exactos están en kubernetes.io/docs/tasks/tools/install-kubectl-linux. Lo mismo aplica a dnf y zypper.' },
-        { cmd: 'sudo dnf install -y kubectl', desc: 'Fedora/RHEL, una vez agregado el repositorio de Kubernetes.', alias: 'sudo zypper install -y kubectl' },
-        { cmd: 'kubectl version --client', desc: 'Confirma la instalación en cualquier sistema.', tip: 'kubectl debe estar a una versión menor de distancia del cluster: un cliente v1.37 funciona con clusters v1.36, v1.37 y v1.38.' }
       ]
     },
     {

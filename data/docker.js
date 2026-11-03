@@ -14,43 +14,70 @@ window.CHEATSHEETS.docker = {
     {
       "id": "instalar-docker",
       "titulo": "Instalar Docker",
-      "intro": "En Windows y macOS se instala Docker Desktop (incluye el motor, el CLI, Compose y Buildx). En Linux se instala Docker Engine directamente.",
+      "intro": "Elige tu sistema operativo. En Windows y macOS se instala Docker Desktop (incluye el motor, el CLI, Compose y Buildx). En Linux se instala Docker Engine directamente.",
       "items": [
         {
+          "so": "windows",
+          "cmd": "winget install -e --id Docker.DockerDesktop",
+          "desc": "Windows: instala Docker Desktop con winget, sin descargar el instalador a mano. Después abre Docker Desktop y acepta el acuerdo.",
+          "tip": "Requiere Windows 10 22H2 o Windows 11 23H2 o superior y virtualización activada en la BIOS. Si pide reiniciar, hazlo antes de abrir la app."
+        },
+        {
+          "so": "windows",
+          "cmd": "scoop install docker",
+          "desc": "Windows: instala solo el cliente de línea de comandos de Docker con Scoop (comandos docker), junto con docker-compose y docker-buildx si los agregas.",
+          "alias": "scoop install docker-compose docker-buildx",
+          "warn": "No incluye el motor ni la interfaz de Docker Desktop: sin un motor corriendo (Docker Desktop, WSL2 o un servidor remoto) los comandos no tendrán a quién hablarle."
+        },
+        {
+          "so": "windows",
           "cmd": "\"Docker Desktop Installer.exe\" install --user --quiet --accept-license --backend=wsl-2",
           "desc": "Windows: instalación por línea de comandos de Docker Desktop, para el usuario actual y con WSL 2. Descarga antes el instalador desde docker.com.",
           "tip": "También puedes hacer doble clic en el instalador. Requiere Windows 10 22H2 o Windows 11 23H2 o superior, y virtualización activada en la BIOS. En Windows Server no es compatible."
         },
         {
+          "so": "macos",
+          "cmd": "brew install --cask docker-desktop",
+          "desc": "macOS: instala Docker Desktop con Homebrew, sin descargar el .dmg a mano. Después abre la app con open /Applications/Docker.app y acepta el acuerdo.",
+          "tip": "Requiere macOS 14 o superior. En Homebrew el nombre actual es docker-desktop (antes se llamaba docker). No lo confundas con brew install docker, que instala solo el cliente de línea de comandos, sin el motor."
+        },
+        {
+          "so": "macos",
           "cmd": "sudo hdiutil attach Docker.dmg && sudo /Volumes/Docker/Docker.app/Contents/MacOS/install --accept-license && sudo hdiutil detach /Volumes/Docker",
           "desc": "macOS: instalación por línea de comandos de Docker Desktop desde el Docker.dmg descargado (Apple Silicon o Intel).",
           "tip": "También puedes abrir el .dmg y arrastrar Docker a Aplicaciones. Luego abre Docker.app y acepta el acuerdo."
         },
         {
+          "so": "linux",
           "cmd": "sudo apt update && sudo apt install ca-certificates curl",
           "desc": "Linux (Ubuntu): primer paso para instalar Docker Engine desde el repositorio oficial de Docker.",
           "tip": "Después hay que agregar la clave y el repositorio de Docker y ejecutar sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin. Los pasos exactos por distribución están en docs.docker.com/engine/install."
         },
         {
+          "so": "linux",
           "cmd": "sudo dnf config-manager addrepo --from-repofile https://download.docker.com/linux/fedora/docker-ce.repo",
           "desc": "Linux (Fedora): agrega el repositorio oficial de Docker.",
           "tip": "Luego: sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin y sudo systemctl enable --now docker."
         },
         {
+          "so": "linux",
           "cmd": "sudo systemctl status docker",
           "desc": "Linux: comprueba que el servicio de Docker esté corriendo.",
           "alias": "sudo systemctl start docker"
         },
         {
+          "so": "linux",
           "cmd": "sudo groupadd docker && sudo usermod -aG docker $USER && newgrp docker",
           "desc": "Linux: permite usar docker sin sudo agregando tu usuario al grupo docker.",
           "warn": "Pertenecer al grupo docker equivale a tener permisos de root; agrega solo usuarios de confianza. Algunas distribuciones ya crean el grupo."
         },
         {
+          "so": "linux",
           "cmd": "sudo systemctl enable docker.service containerd.service",
           "desc": "Linux: hace que Docker arranque con el sistema (en Debian y Ubuntu ya viene así por defecto)."
         },
         {
+          "so": "linux",
           "cmd": "curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh --dry-run",
           "desc": "Linux: descarga el script de conveniencia de Docker y muestra lo que haría sin instalar nada.",
           "warn": "Docker lo recomienda solo para desarrollo y pruebas, no producción. Revisa el script antes de ejecutarlo sin --dry-run."
