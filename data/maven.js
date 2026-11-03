@@ -6,6 +6,21 @@ window.CHEATSHEETS.maven = {
   meta: { id: 'maven', nombre: 'Maven', subtitulo: 'Ciclo de vida, dependencias, perfiles y plugins' },
   secciones: [
     {
+      id: 'instalar-maven',
+      titulo: 'Instalar Maven',
+      intro: 'Elige tu sistema operativo. Maven necesita un JDK instalado (la versión 3.10 requiere JDK 8 o superior) y que JAVA_HOME apunte a él o que java esté en el PATH. Si el proyecto ya trae mvnw, puedes saltarte esta sección.',
+      items: [
+        { so: 'windows', cmd: 'scoop install main/maven', desc: 'Windows: instala Maven con Scoop.', tip: 'Scoop también ofrece versiones concretas desde el bucket versions: scoop bucket add versions y luego scoop install maven3 o maven4. Maven no está disponible en winget.' },
+        { so: 'windows', cmd: 'choco install maven', desc: 'Windows: instala Maven con Chocolatey.' },
+        { so: 'macos', cmd: 'brew install maven', desc: 'macOS: instala Maven con Homebrew.', alias: 'sudo port install maven3' },
+        { so: 'linux', cmd: 'sudo apt install maven', desc: 'Debian y Ubuntu.', tip: 'Los repositorios de las distribuciones suelen traer una versión más antigua que la última de Maven.' },
+        { so: 'linux', cmd: 'sudo dnf install maven', desc: 'Fedora y RHEL.', alias: 'sudo yum install maven' },
+        { so: ['macos', 'linux'], cmd: 'sdk install maven', desc: 'macOS, Linux y WSL con SDKMAN!, que además permite cambiar entre versiones.' },
+        { cmd: 'tar xzvf apache-maven-<version>-bin.tar.gz', desc: 'Instalación manual en cualquier sistema: descarga el archivo binario desde maven.apache.org/download.html y descomprímelo (en Windows, el .zip).', tip: 'Después agrega la carpeta bin de Maven a la variable PATH.' },
+        { cmd: 'mvn -v', desc: 'Confirma la instalación, en una terminal nueva. Muestra la versión de Maven, su carpeta y el JDK que está usando.' }
+      ]
+    },
+    {
       id: 'empezar-de-cero',
       titulo: 'Empezar de cero',
       tipo: 'pasos',

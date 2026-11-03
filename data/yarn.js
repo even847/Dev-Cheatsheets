@@ -6,22 +6,49 @@ window.CHEATSHEETS.yarn = {
   meta: { id: 'yarn', nombre: 'Yarn', subtitulo: 'Instalar, agregar paquetes y correr scripts con Yarn' },
   secciones: [
     {
+      id: 'instalar-yarn',
+      titulo: 'Instalar Yarn moderno (2+)',
+      intro: 'La versión actual de Yarn. Se activa con Corepack, que viene con Node.js, y se fija por proyecto. Los comandos son idénticos en Windows, macOS y Linux, por eso esta sección no se divide por sistema operativo. Si necesitas la versión antigua (1.x), usa la sección siguiente, que sí está dividida por sistema.',
+      items: [
+        { cmd: 'corepack enable', desc: 'Activa Corepack (viene con Node desde 14.19 y 16.9, pero está desactivado por defecto). Después, yarn queda disponible y usa la versión que indique cada proyecto.', tip: 'Es la forma recomendada por Yarn. En Windows puede requerir PowerShell como administrador.' },
+        { cmd: 'npm install -g corepack', desc: 'Instala Corepack cuando tu Node no lo trae (por ejemplo, builds de terceros o paquetes del sistema). Luego ejecuta corepack enable.' },
+        { cmd: 'corepack enable --install-directory ~/.volta/bin', desc: 'Si usas Volta: sus shims bloquean los de Corepack, así que hay que indicarle la carpeta de Volta (después de npm install -g corepack).' },
+        { cmd: 'yarn exec env', desc: 'Comprueba que Corepack quedó bien instalado: si imprime una ruta, funciona.' },
+        { cmd: 'corepack use yarn@stable', desc: 'Fija Yarn en el proyecto actual: escribe la versión en el campo packageManager del package.json y la descarga.' },
+        { cmd: 'corepack prepare yarn@<version> --activate', desc: 'Descarga y activa una versión concreta de Yarn.', ej: 'corepack prepare yarn@4.5.0 --activate' },
+        { cmd: 'corepack disable', desc: 'Desactiva Corepack y quita los atajos de yarn y pnpm que había creado.' },
+        { cmd: 'yarn init -2', desc: 'Crea un proyecto nuevo que usa Yarn moderno desde el inicio.' },
+        { cmd: 'yarn set version stable', desc: 'En un proyecto existente, pasa a la última versión estable de Yarn y la guarda en el proyecto. Después corre yarn install.' },
+        { cmd: 'yarn set version canary', desc: 'Usa el canal canary, con funciones que aún no llegaron a estable.' },
+        { cmd: 'yarn set version from sources', desc: 'Compila Yarn desde la rama master (con --branch <nombre> prueba un PR concreto).', warn: 'No puede usar Corepack: guarda el binario en .yarn/releases y lo referencia desde .yarnrc.yml.' },
+        { cmd: 'yarn --version', alias: 'yarn -v', desc: 'Confirma que Yarn quedó instalado y muestra su versión.', ej: '4.5.0' }
+      ]
+    },
+    {
+      id: 'instalar-yarn-classic',
+      titulo: 'Instalar Yarn Classic (1.x) por sistema',
+      intro: 'La versión antigua de Yarn. Se instala de forma global con un gestor de paquetes, y por eso cambia según tu sistema operativo: elige el tuyo. Si usas Yarn moderno, no necesitas esta sección (se instala con Corepack).',
+      items: [
+        { so: 'windows', cmd: 'scoop install yarn', desc: 'Windows: instala Yarn Classic con Scoop.' },
+        { so: 'windows', cmd: 'choco install yarn', desc: 'Windows: instala Yarn Classic con Chocolatey.' },
+        { so: 'macos', cmd: 'brew install yarn', desc: 'macOS: instala Yarn Classic con Homebrew.' },
+        { so: 'macos', cmd: 'sudo port install yarn', desc: 'macOS: instala Yarn Classic con MacPorts.' },
+        { so: 'macos', cmd: 'brew upgrade yarn', desc: 'macOS: actualiza Yarn Classic instalado con Homebrew.' },
+        { so: 'linux', cmd: 'sudo apt update && sudo apt install yarn', desc: 'Debian y Ubuntu, una vez agregado el repositorio APT de Yarn.', tip: 'Antes hay que agregar la clave y el repositorio (dl.yarnpkg.com/debian); los pasos están en classic.yarnpkg.com/en/docs/install.' },
+        { so: 'linux', cmd: 'sudo dnf install yarn', desc: 'Fedora, CentOS y RHEL, una vez agregado el repositorio RPM de Yarn.', alias: 'sudo yum install yarn' },
+        { so: 'linux', cmd: 'apk add yarn', desc: 'Alpine Linux.' },
+        { so: 'linux', cmd: 'sudo pacman -S yarn', desc: 'Arch Linux.' },
+        { so: ['macos', 'linux'], cmd: 'curl -o- -L https://yarnpkg.com/install.sh | bash', desc: 'Script de instalación de Yarn Classic para sistemas tipo Unix.', warn: 'Ejecuta un script descargado de internet; revísalo antes si no confías en la fuente.' },
+        { cmd: 'npm install --global yarn@1', desc: 'Con npm, en cualquier sistema operativo: instala Yarn Classic de forma global; el mismo comando sirve para actualizarlo.' },
+        { cmd: 'yarn --version', desc: 'Confirma que Yarn Classic quedó instalado.', ej: '1.22.22' }
+      ]
+    },
+    {
       id: 'empezar-de-cero',
       titulo: 'Empezar de cero',
       tipo: 'pasos',
-      intro: 'Yarn necesita Node.js instalado. La forma recomendada de activarlo es con Corepack, que viene incluido con Node.',
+      intro: 'Con Yarn ya instalado y verificado (secciones anteriores), sigue estos pasos en orden; los comandos son los mismos en todos los sistemas.',
       items: [
-        {
-          cmd: 'corepack enable',
-          desc: 'Activa Corepack para que el comando yarn quede disponible sin instalar nada más.',
-          warn: 'En Windows puede requerir PowerShell como administrador. Las demás formas de instalar (npm, Scoop, Chocolatey, Homebrew, apt...) están en la sección "Instalar Yarn".'
-        },
-        {
-          cmd: 'yarn --version',
-          alias: 'yarn -v',
-          desc: 'Confirma que Yarn funciona y muestra su versión.',
-          ej: '4.5.0'
-        },
         {
           cmd: 'yarn init',
           desc: 'Crea un package.json en la carpeta actual (en Yarn Classic pregunta los datos paso a paso).',
@@ -35,33 +62,6 @@ window.CHEATSHEETS.yarn = {
           cmd: 'yarn install',
           desc: 'Instala todas las dependencias del package.json.'
         }
-      ]
-    },
-    {
-      id: 'instalar-yarn',
-      titulo: 'Instalar Yarn',
-      intro: 'Hay dos familias: Yarn moderno (2+), que se activa con Corepack y se fija por proyecto, y Yarn Classic (1.x), que se instala de forma global. Todas necesitan Node.js instalado.',
-      items: [
-        { cmd: 'corepack enable', desc: 'Activa Corepack (viene con Node desde 14.19 y 16.9, pero está desactivado por defecto). Después, yarn queda disponible y usa la versión que indique cada proyecto.', tip: 'Es la forma recomendada por Yarn. En Windows puede requerir PowerShell como administrador.' },
-        { cmd: 'npm install -g corepack', desc: 'Instala Corepack cuando tu Node no lo trae (por ejemplo, builds de terceros o paquetes del sistema). Luego ejecuta corepack enable.' },
-        { cmd: 'corepack enable --install-directory ~/.volta/bin', desc: 'Si usas Volta: sus shims bloquean los de Corepack, así que hay que indicarle la carpeta de Volta (después de npm install -g corepack).' },
-        { cmd: 'yarn exec env', desc: 'Comprueba que Corepack quedó bien instalado: si imprime una ruta, funciona.' },
-        { cmd: 'corepack use yarn@stable', desc: 'Fija Yarn en el proyecto actual: escribe la versión en el campo packageManager del package.json y la descarga.' },
-        { cmd: 'corepack prepare yarn@<version> --activate', desc: 'Descarga y activa una versión concreta de Yarn.', ej: 'corepack prepare yarn@4.5.0 --activate' },
-        { cmd: 'corepack disable', desc: 'Desactiva Corepack y quita los atajos de yarn y pnpm que había creado.' },
-        { cmd: 'yarn init -2', desc: 'Crea un proyecto nuevo que usa Yarn moderno desde el inicio.' },
-        { cmd: 'yarn set version stable', desc: 'En un proyecto existente, pasa a la última versión estable de Yarn y la guarda en el proyecto. Después corre yarn install.' },
-        { cmd: 'yarn set version canary', desc: 'Usa el canal canary, con funciones que aún no llegaron a estable.' },
-        { cmd: 'yarn set version from sources', desc: 'Compila Yarn desde la rama master (con --branch <nombre> prueba un PR concreto).', warn: 'No puede usar Corepack: guarda el binario en .yarn/releases y lo referencia desde .yarnrc.yml.' },
-        { cmd: 'npm install --global yarn@1', desc: 'Instala Yarn Classic (1.x) de forma global; el mismo comando sirve para actualizarlo.', tip: 'Sirve en cualquier sistema operativo.' },
-        { cmd: 'scoop install yarn', desc: 'Windows: instala Yarn Classic con Scoop.' },
-        { cmd: 'choco install yarn', desc: 'Windows: instala Yarn Classic con Chocolatey.' },
-        { cmd: 'brew install yarn', desc: 'macOS: instala Yarn Classic con Homebrew.', alias: 'sudo port install yarn' },
-        { cmd: 'sudo apt update && sudo apt install yarn', desc: 'Debian/Ubuntu: instala Yarn Classic, una vez agregado el repositorio APT de Yarn.', tip: 'Antes hay que agregar la clave y el repositorio (dl.yarnpkg.com/debian); los pasos están en classic.yarnpkg.com/en/docs/install.' },
-        { cmd: 'sudo dnf install yarn', desc: 'Fedora/CentOS/RHEL: instala Yarn Classic, una vez agregado el repositorio RPM de Yarn.', alias: 'sudo yum install yarn' },
-        { cmd: 'apk add yarn', desc: 'Alpine Linux: instala Yarn Classic.', alias: 'pacman -S yarn' },
-        { cmd: 'curl -o- -L https://yarnpkg.com/install.sh | bash', desc: 'Script de instalación de Yarn Classic para cualquier sistema tipo Unix.', warn: 'Ejecuta un script descargado de internet; revísalo antes si no confías en la fuente.' },
-        { cmd: 'brew upgrade yarn', desc: 'Actualiza Yarn Classic instalado con Homebrew.' }
       ]
     },
     {

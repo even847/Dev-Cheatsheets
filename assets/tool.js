@@ -98,6 +98,28 @@
 
     const secEls = [], tocLinks = [];
     const FAV_ID = 'mis-favoritos';
+
+    /* ----- pestañas por sistema operativo (secciones de instalación) ----- */
+    const OS_LIST = [{ id: 'windows', nombre: 'Windows' }, { id: 'macos', nombre: 'macOS' }, { id: 'linux', nombre: 'Linux' }];
+    const osGroups = [];
+    let curOS = null;
+    try { curOS = localStorage.getItem('dc.so'); } catch (e) { /* sin almacenamiento */ }
+    if (!OS_LIST.some(o => o.id === curOS)) {
+      const p = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || '').toLowerCase();
+      curOS = /mac|iphone|ipad/.test(p) ? 'macos' : /win/.test(p) ? 'windows' : 'linux';
+    }
+    function paintOS() {
+      osGroups.forEach(g => {
+        const sel = g.ids.includes(curOS) ? curOS : g.ids[0]; // si la sección no tiene ese sistema, muestra el primero
+        g.btns.forEach(b => { const on = b.dataset.os === sel; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+        g.itemEls.forEach(n => n.classList.toggle('so-off', !!n._so && !n._so.includes(sel)));
+      });
+    }
+    function setOS(id) {
+      curOS = id;
+      try { localStorage.setItem('dc.so', id); } catch (e) { /* ignorar */ }
+      paintOS();
+    }
     let showFavs = false; // vista "Favoritos" de esta guía (no es una sección de los datos)
 
     function apply() {
@@ -133,6 +155,7 @@
             it.warn && el('div', { class: 'warn' }, it.warn),
             it._local && localRow(s, it));
         }
+        node._so = it.so ? [].concat(it.so) : null; // sistemas a los que aplica; sin valor = común a todos
         node._cmd = it.cmd || it.term;
         node._text = norm([it.cmd, it.desc, it.alias, it.ej, it.tip, it.term, it.def].filter(Boolean).join(' '));
         list.append(node);
@@ -149,10 +172,25 @@
       const secnav = el('div', { class: 'secnav' },
         idx > 0 ? navBtn(idx - 1, '← ' + data.secciones[idx - 1].titulo, 'prev') : el('span'),
         idx < last ? navBtn(idx + 1, data.secciones[idx + 1].titulo + ' →', 'next') : el('span'));
+      // Secciones con comandos por sistema operativo: pestañas para ver solo el elegido
+      let osTabs = null;
+      if (itemEls.some(n => n._so)) {
+        const present = OS_LIST.filter(o => itemEls.some(n => n._so && n._so.includes(o.id)));
+        const btns = present.map(o => {
+          const c = itemEls.filter(n => n._so && n._so.includes(o.id)).length;
+          const b = el('button', { type: 'button', class: 'os-tab', 'data-os': o.id, role: 'tab' },
+            el('span', { class: 'os-name' }, o.nombre), el('span', { class: 'os-n' }, String(c)));
+          b.addEventListener('click', () => setOS(o.id));
+          return b;
+        });
+        osTabs = el('div', { class: 'os-tabs', role: 'tablist', 'aria-label': 'Sistema operativo' }, ...btns);
+        osGroups.push({ itemEls, btns, ids: present.map(o => o.id) });
+      }
       const sec = el('section', { class: 'sec', id: s.id },
         el('h2', {}, el('span', { class: 'num' }, String(idx + 1).padStart(2, '0')), s.titulo, count),
         s.intro && el('p', { class: 'intro' }, s.intro),
         s.nota && el('div', { class: 'note' }, s.nota),
+        osTabs,
         list,
         secnav);
       content.append(sec);
@@ -176,6 +214,7 @@
       if (!node) return;
       const i = secEls.indexOf(s);
       if (!searching && (showFavs || i !== cur)) { showFavs = false; cur = i; apply(); } // la sección tiene que estar visible
+      if (typeof showOSFor === 'function') showOSFor(node);
       document.querySelectorAll('.item.flash').forEach(n => n.classList.remove('flash'));
       void node.offsetWidth; // reinicia la animación si ya estaba iluminado
       node.classList.add('flash');
@@ -238,6 +277,13 @@
     });
     favs.onChange(renderGuideFavs);
     renderGuideFavs();
+
+    paintOS();
+    // Al ir a un comando (favoritos, búsqueda) de otro sistema, cambia a la pestaña que lo contiene
+    const showOSFor = node => {
+      if (!node || !node._so || node._so.includes(curOS)) return;
+      setOS(node._so[0]);
+    };
 
     const empty = el('div', { class: 'empty hidden', hidden: true }, 'Nada coincide con tu búsqueda.');
     content.append(empty);

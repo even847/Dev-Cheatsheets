@@ -6,21 +6,22 @@ window.CHEATSHEETS.node = {
   meta: { id: 'node', nombre: 'Node.js', subtitulo: 'nvm, node y npm: de instalar a trabajar' },
   secciones: [
     {
+      id: 'instalar-nvm',
+      titulo: 'Instalar nvm',
+      intro: 'Elige tu sistema operativo. nvm-windows y el nvm de macOS/Linux son programas distintos: instala el que corresponde a tu sistema.',
+      items: [
+        { so: 'windows', cmd: 'winget install CoreyButler.NVMforWindows', desc: 'Windows: instala nvm-windows.', alias: 'scoop install nvm', tip: 'Cierra y vuelve a abrir la terminal al terminar; si no, "nvm" no se reconoce.' },
+        { so: 'windows', cmd: 'nvm version', desc: 'Windows: comprueba que nvm quedó instalado.', ej: '1.2.2' },
+        { so: ['macos', 'linux'], cmd: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash', desc: 'macOS, Linux y WSL: instala nvm. Clona nvm en ~/.nvm y agrega las líneas necesarias a tu archivo de perfil.', alias: 'wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash', warn: 'Ejecuta un script descargado de internet; revísalo antes si no confías en la fuente. Cierra y abre la terminal al terminar.' },
+        { so: ['macos', 'linux'], cmd: 'command -v nvm', desc: 'macOS, Linux y WSL: confirma que nvm quedó instalado; debe imprimir nvm.', tip: 'which nvm no funciona porque nvm es una función del shell, no un ejecutable.' }
+      ]
+    },
+    {
       id: 'empezar-de-cero',
       titulo: 'Empezar de cero',
       tipo: 'pasos',
-      intro: 'Sigue estos pasos en orden, en PowerShell. Cada paso indica qué deberías ver si salió bien.',
+      intro: 'Con nvm ya instalado y verificado (sección anterior), sigue estos pasos en orden. Están pensados para nvm-windows en PowerShell; en macOS y Linux algunos comandos de nvm cambian (mira "nvm en Mac y Linux"). Cada paso indica qué deberías ver si salió bien.',
       items: [
-        {
-          cmd: 'winget install CoreyButler.NVMforWindows',
-          desc: 'Instala nvm-windows, el gestor que permite tener varias versiones de Node y cambiar entre ellas.',
-          tip: 'Cierra y vuelve a abrir la terminal al terminar; si no, "nvm" no se reconoce. Con Scoop también sirve: scoop install nvm.'
-        },
-        {
-          cmd: 'nvm version',
-          desc: 'Comprueba que nvm quedó instalado.',
-          ej: '1.2.2'
-        },
         {
           cmd: 'nvm install lts',
           desc: 'Descarga e instala la última versión LTS, que es la recomendada para trabajar (estable y con soporte largo).',
@@ -70,7 +71,7 @@ window.CHEATSHEETS.node = {
     {
       id: 'nvm-en-mac-y-linux',
       titulo: 'nvm en Mac y Linux (diferencias)',
-      intro: 'Si algún día usas WSL o un servidor Linux, el nvm es otro programa. Estos son los comandos que cambian, y que nvm-windows no tiene.',
+      intro: 'En macOS, Linux o WSL el nvm es otro programa distinto de nvm-windows (se instala en la sección "Instalar nvm"). Estos son los comandos que cambian y que nvm-windows no tiene.',
       items: [
         { cmd: 'nvm install --lts', desc: 'Instala la última LTS. En nvm-windows sería nvm install lts.' },
         { cmd: 'nvm ls-remote --lts', desc: 'Lista las versiones LTS disponibles para descargar.' },

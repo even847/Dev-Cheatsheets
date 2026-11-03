@@ -6,21 +6,29 @@ window.CHEATSHEETS.gh = {
   meta: { id: 'gh', nombre: 'GitHub CLI', subtitulo: 'Pull requests, issues, repos, Actions y releases desde la terminal' },
   secciones: [
     {
+      id: 'instalar-en-mac-y-linux',
+      titulo: 'Instalar GitHub CLI',
+      intro: 'Elige tu sistema operativo. Solo cambia cómo se instala; después los comandos son los mismos.',
+      items: [
+        { so: 'windows', cmd: 'winget install --id GitHub.cli --source winget', desc: 'Windows: instala GitHub CLI (método oficial recomendado).', tip: 'Abre una ventana nueva de Windows Terminal (no solo una pestaña) al terminar para que el PATH se actualice.' },
+        { so: 'windows', cmd: 'choco install gh', desc: 'Windows: instala gh con Chocolatey.', alias: 'scoop install gh', tip: 'Chocolatey y Scoop son paquetes de la comunidad: el equipo de gh no los mantiene.' },
+        { so: 'macos', cmd: 'sudo port install gh', desc: 'macOS: instala gh con MacPorts (paquete de la comunidad).' },
+        { so: ['macos', 'linux'], cmd: 'brew install gh', desc: 'macOS y Linux: instala gh con Homebrew.', tip: 'En Linux, el paquete de Homebrew es mantenido por la comunidad, no por el equipo de gh.' },
+        { so: 'linux', cmd: 'sudo apt update && sudo apt install gh -y', desc: 'Debian y Ubuntu, una vez agregado el repositorio oficial de GitHub CLI.', tip: 'Antes hay que agregar la clave y el repositorio (cli.github.com/packages); los pasos exactos están en github.com/cli/cli/blob/trunk/docs/install_linux.md. Evita las versiones 2.45.x y 2.46.x de paquetes de la comunidad: están rotas.' },
+        { so: 'linux', cmd: 'sudo dnf install gh', desc: 'Fedora (paquete de la comunidad). Para RHEL o la versión oficial, agrega primero el repositorio: sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo' },
+        { so: 'linux', cmd: 'sudo zypper install gh', desc: 'openSUSE, una vez agregado el repositorio oficial (sudo zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo y sudo zypper ref).' },
+        { so: 'linux', cmd: 'sudo pacman -S github-cli', desc: 'Arch Linux (paquete de la comunidad).' },
+        { so: 'linux', cmd: 'apk add github-cli', desc: 'Alpine Linux (paquete de la comunidad).' },
+        { cmd: 'conda install gh --channel conda-forge', desc: 'Con Conda, desde el canal conda-forge (comunidad).' },
+        { cmd: 'gh --version', desc: 'Confirma que gh quedó instalado, en cualquier sistema.' }
+      ]
+    },
+    {
       id: 'empezar-de-cero',
       titulo: 'Empezar de cero',
       tipo: 'pasos',
-      intro: 'gh es el cliente oficial de GitHub para la terminal. Sigue estos pasos en orden, en PowerShell.',
+      intro: 'Con gh ya instalado y verificado (sección anterior), sigue estos pasos en orden para iniciar sesión y probarlo.',
       items: [
-        {
-          cmd: 'winget install --id GitHub.cli',
-          desc: 'Instala GitHub CLI en Windows.',
-          tip: 'Con Scoop también sirve: scoop install gh. Cierra y vuelve a abrir la terminal al terminar para que el PATH se actualice.'
-        },
-        {
-          cmd: 'gh --version',
-          desc: 'Confirma que gh quedó instalado y qué versión es.',
-          ej: 'gh version 2.101.0 (2026-09-01)'
-        },
         {
           cmd: 'gh auth login',
           desc: 'Inicia sesión en GitHub de forma guiada: eliges GitHub.com, el protocolo (HTTPS o SSH) y si autenticas con el navegador.',

@@ -257,6 +257,20 @@ section.sec > h2 .count { margin-left: auto; font: 500 .8rem var(--sans); color:
 .item .warn::before { content: "⚠ "; }
 .item.hidden, section.sec.hidden { display: none; }
 
+/* Pestañas por sistema operativo en las secciones de instalación */
+.os-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.os-tab {
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; cursor: pointer;
+  font: 600 .92rem var(--sans); color: var(--muted); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 999px;
+}
+.os-tab:hover { border-color: var(--accent); color: var(--accent); }
+.os-tab.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.os-tab .os-n { font: 500 .75rem var(--sans); padding: 1px 7px; border-radius: 999px; background: rgba(127,127,127,.18); }
+.os-tab.on .os-n { background: rgba(255,255,255,.25); }
+.item.so-off { display: none; }
+body.searching .item.so-off:not(.hidden) { display: block; } /* al buscar se ven todos los sistemas */
+
 /* comando ubicado desde un favorito o una búsqueda: se ilumina y se apaga solo a los 5 s */
 .item.flash { animation: flash 5s ease-out; }
 @keyframes flash {

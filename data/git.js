@@ -6,21 +6,28 @@ window.CHEATSHEETS.git = {
   meta: { id: 'git', nombre: 'Git', subtitulo: 'Commits, ramas, merge, rebase, stash y remotos' },
   secciones: [
     {
+      id: 'instalar-en-mac-y-linux',
+      titulo: 'Instalar Git',
+      intro: 'Elige tu sistema operativo. Solo cambia cómo se instala; después todo lo demás funciona igual.',
+      items: [
+        { so: 'windows', cmd: 'winget install --id Git.Git -e --source winget', desc: 'Windows: instala Git for Windows (incluye el cliente git, Git Bash y el Git Credential Manager).', alias: 'scoop install git', tip: 'Cierra y vuelve a abrir la terminal al terminar para que el PATH se actualice. El paquete de winget no lo mantiene el proyecto Git for Windows y puede ir por detrás de la última versión; el instalador de git-scm.com/install/windows siempre es el más reciente.' },
+        { so: 'windows', cmd: 'choco install git', desc: 'Windows: instala Git con Chocolatey.', tip: 'Igual que winget, es un paquete de terceros y puede no ser la última versión.' },
+        { so: 'macos', cmd: 'xcode-select --install', desc: 'macOS: instala las Command Line Tools de Apple, que incluyen Git, sin necesitar gestores de paquetes.', tip: 'Con xcode-select -p compruebas si ya están instaladas.' },
+        { so: 'macos', cmd: 'brew install git', desc: 'macOS: instala la versión más reciente con Homebrew (requiere tener Homebrew instalado).', alias: 'sudo port install git' },
+        { so: 'linux', cmd: 'sudo apt update && sudo apt install git', desc: 'Debian y Ubuntu.' },
+        { so: 'linux', cmd: 'sudo dnf install git', desc: 'Fedora y RHEL/CentOS Stream/Rocky/AlmaLinux 8 o superior.', alias: 'sudo yum install git' },
+        { so: 'linux', cmd: 'sudo pacman -S git', desc: 'Arch Linux.' },
+        { so: 'linux', cmd: 'sudo apk add git', desc: 'Alpine Linux.' },
+        { so: 'linux', cmd: 'sudo zypper install git', desc: 'openSUSE.' },
+        { cmd: 'git --version', desc: 'Confirma que Git quedó instalado, en cualquier sistema.', ej: 'git version 2.47.0' }
+      ]
+    },
+    {
       id: 'empezar-de-cero',
       titulo: 'Empezar de cero',
       tipo: 'pasos',
-      intro: 'Sigue estos pasos en orden, en PowerShell. Cada paso indica qué deberías ver si salió bien.',
+      intro: 'Con Git ya instalado y verificado (sección anterior), sigue estos pasos en orden; los comandos son los mismos en todos los sistemas. Cada paso indica qué deberías ver si salió bien.',
       items: [
-        {
-          cmd: 'winget install --id Git.Git -e --source winget',
-          desc: 'Instala Git for Windows: incluye el cliente git, Git Bash y el Git Credential Manager.',
-          tip: 'Cierra y vuelve a abrir la terminal al terminar para que el PATH se actualice. Con Scoop también sirve: scoop install git.'
-        },
-        {
-          cmd: 'git --version',
-          desc: 'Confirma que Git quedó instalado y qué versión es.',
-          ej: 'git version 2.47.0.windows.1'
-        },
         {
           cmd: 'git config --global user.name "<Tu Nombre>"',
           desc: 'Define el nombre que aparecerá como autor en tus commits. Es obligatorio antes de poder confirmar cambios.'
