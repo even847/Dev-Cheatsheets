@@ -97,6 +97,10 @@ window.CHEATSHEETS.docker = {
           "warn": "Confirma el contexto antes de eliminar recursos."
         },
         {
+          "cmd": "docker context use default",
+          "desc": "Vuelve al contexto por defecto (el Docker local). También sirve cuando `docker buildx use default` falla con \"run `docker context use default` to switch to default context\"."
+        },
+        {
           "cmd": "docker context inspect <contexto>",
           "desc": "Muestra la configuración y endpoints de un contexto."
         },
@@ -600,7 +604,8 @@ window.CHEATSHEETS.docker = {
         },
         {
           "cmd": "docker buildx use <builder>",
-          "desc": "Selecciona el builder Buildx que se usará por defecto en las próximas construcciones."
+          "desc": "Selecciona el builder Buildx que se usará por defecto en las próximas construcciones.",
+          "tip": "Los builders `default` y `desktop-linux` son contextos de Docker, no builders propios: para volver a ellos usa `docker context use default` (o `desktop-linux`) en vez de `buildx use`."
         },
         {
           "cmd": "docker buildx build --platform linux/amd64,linux/arm64 -t <imagen> --push .",

@@ -59,6 +59,13 @@ window.REGISTRY = [
     estado: 'listo'
   },
   {
+    id: 'yarn',
+    nombre: 'Yarn',
+    descripcion: 'Dependencias, scripts, workspaces y caché del gestor de paquetes.',
+    color: '#2c8ebb',
+    estado: 'listo'
+  },
+  {
     id: 'powershell',
     nombre: 'PowerShell',
     descripcion: 'Archivos, procesos, red y variables de entorno en Windows.',

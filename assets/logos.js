@@ -68,6 +68,12 @@
     '<path d="M24 44V22l16 22V22" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
   );
 
+  // Yarn: círculo con una Y
+  const yarn = svg(
+    '<circle cx="32" cy="32" r="27" fill="currentColor"/>' +
+    '<path d="M20 20l12 14 12-14M32 34v14" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
+  );
+
   const generico = svg(
     '<rect x="6" y="10" width="52" height="44" rx="7" fill="none" stroke="currentColor" stroke-width="4"/>' +
     '<path d="M17 26l10 8-10 8M31 44h16" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'
@@ -86,5 +92,5 @@
     '<g fill="#fff"><circle cx="24" cy="21" r="4.5"/><circle cx="24" cy="43" r="4.5"/><circle cx="40" cy="42" r="4.5"/></g>'
   );
 
-  window.LOGOS = { docker, kubernetes, git, gh, scoop, maven, gradle, node, powershell, generico };
+  window.LOGOS = { docker, kubernetes, git, gh, scoop, maven, gradle, node, yarn, powershell, generico };
 })();
