@@ -12,6 +12,57 @@ window.CHEATSHEETS.docker = {
   ],
   "secciones": [
     {
+      "id": "instalar-docker",
+      "titulo": "Instalar Docker",
+      "intro": "En Windows y macOS se instala Docker Desktop (incluye el motor, el CLI, Compose y Buildx). En Linux se instala Docker Engine directamente.",
+      "items": [
+        {
+          "cmd": "\"Docker Desktop Installer.exe\" install --user --quiet --accept-license --backend=wsl-2",
+          "desc": "Windows: instalación por línea de comandos de Docker Desktop, para el usuario actual y con WSL 2. Descarga antes el instalador desde docker.com.",
+          "tip": "También puedes hacer doble clic en el instalador. Requiere Windows 10 22H2 o Windows 11 23H2 o superior, y virtualización activada en la BIOS. En Windows Server no es compatible."
+        },
+        {
+          "cmd": "sudo hdiutil attach Docker.dmg && sudo /Volumes/Docker/Docker.app/Contents/MacOS/install --accept-license && sudo hdiutil detach /Volumes/Docker",
+          "desc": "macOS: instalación por línea de comandos de Docker Desktop desde el Docker.dmg descargado (Apple Silicon o Intel).",
+          "tip": "También puedes abrir el .dmg y arrastrar Docker a Aplicaciones. Luego abre Docker.app y acepta el acuerdo."
+        },
+        {
+          "cmd": "sudo apt update && sudo apt install ca-certificates curl",
+          "desc": "Linux (Ubuntu): primer paso para instalar Docker Engine desde el repositorio oficial de Docker.",
+          "tip": "Después hay que agregar la clave y el repositorio de Docker y ejecutar sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin. Los pasos exactos por distribución están en docs.docker.com/engine/install."
+        },
+        {
+          "cmd": "sudo dnf config-manager addrepo --from-repofile https://download.docker.com/linux/fedora/docker-ce.repo",
+          "desc": "Linux (Fedora): agrega el repositorio oficial de Docker.",
+          "tip": "Luego: sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin y sudo systemctl enable --now docker."
+        },
+        {
+          "cmd": "sudo systemctl status docker",
+          "desc": "Linux: comprueba que el servicio de Docker esté corriendo.",
+          "alias": "sudo systemctl start docker"
+        },
+        {
+          "cmd": "sudo groupadd docker && sudo usermod -aG docker $USER && newgrp docker",
+          "desc": "Linux: permite usar docker sin sudo agregando tu usuario al grupo docker.",
+          "warn": "Pertenecer al grupo docker equivale a tener permisos de root; agrega solo usuarios de confianza. Algunas distribuciones ya crean el grupo."
+        },
+        {
+          "cmd": "sudo systemctl enable docker.service containerd.service",
+          "desc": "Linux: hace que Docker arranque con el sistema (en Debian y Ubuntu ya viene así por defecto)."
+        },
+        {
+          "cmd": "curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh --dry-run",
+          "desc": "Linux: descarga el script de conveniencia de Docker y muestra lo que haría sin instalar nada.",
+          "warn": "Docker lo recomienda solo para desarrollo y pruebas, no producción. Revisa el script antes de ejecutarlo sin --dry-run."
+        },
+        {
+          "cmd": "docker run hello-world",
+          "desc": "Confirma que Docker funciona, en cualquier sistema: descarga una imagen de prueba, la ejecuta e imprime un mensaje.",
+          "tip": "En Linux sin haber configurado el grupo docker, usa sudo docker run hello-world."
+        }
+      ]
+    },
+    {
       "id": "informacion-ayuda-y-contexto",
       "titulo": "Información, ayuda y contexto",
       "items": [

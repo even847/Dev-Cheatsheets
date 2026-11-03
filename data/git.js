@@ -9,7 +9,7 @@ window.CHEATSHEETS.git = {
       id: 'empezar-de-cero',
       titulo: 'Empezar de cero',
       tipo: 'pasos',
-      intro: 'Sigue estos pasos en orden, en PowerShell. Cada paso indica qué deberías ver si salió bien.',
+      intro: 'Sigue estos pasos en orden, en PowerShell (Windows). En macOS o Linux, instala Git con la sección siguiente y continúa desde "git --version". Cada paso indica qué deberías ver si salió bien.',
       items: [
         {
           cmd: 'winget install --id Git.Git -e --source winget',
@@ -55,6 +55,21 @@ window.CHEATSHEETS.git = {
           cmd: 'git commit -m "<mensaje>"',
           desc: 'Guarda en el historial los cambios que están en staging, con un mensaje que explique el porqué.'
         }
+      ]
+    },
+    {
+      id: 'instalar-en-mac-y-linux',
+      titulo: 'Instalar en macOS y Linux',
+      intro: 'Los pasos de "Empezar de cero" instalan Git en Windows. En macOS y Linux solo cambia cómo se instala; después todo lo demás funciona igual.',
+      items: [
+        { cmd: 'xcode-select --install', desc: 'macOS: instala las Command Line Tools de Apple, que incluyen Git, sin necesitar gestores de paquetes.', tip: 'Con xcode-select -p compruebas si ya están instaladas.' },
+        { cmd: 'brew install git', desc: 'macOS: instala la versión más reciente con Homebrew (requiere tener Homebrew instalado).', alias: 'sudo port install git' },
+        { cmd: 'sudo apt update && sudo apt install git', desc: 'Debian y Ubuntu.' },
+        { cmd: 'sudo dnf install git', desc: 'Fedora y RHEL/CentOS Stream/Rocky/AlmaLinux 8 o superior.', alias: 'sudo yum install git' },
+        { cmd: 'sudo pacman -S git', desc: 'Arch Linux.' },
+        { cmd: 'sudo apk add git', desc: 'Alpine Linux.' },
+        { cmd: 'sudo zypper install git', desc: 'openSUSE.' },
+        { cmd: 'git --version', desc: 'Confirma que Git quedó instalado, en cualquier sistema.', ej: 'git version 2.47.0' }
       ]
     },
     {

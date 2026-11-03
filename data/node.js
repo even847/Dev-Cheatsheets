@@ -70,8 +70,10 @@ window.CHEATSHEETS.node = {
     {
       id: 'nvm-en-mac-y-linux',
       titulo: 'nvm en Mac y Linux (diferencias)',
-      intro: 'Si algún día usas WSL o un servidor Linux, el nvm es otro programa. Estos son los comandos que cambian, y que nvm-windows no tiene.',
+      intro: 'En macOS, Linux o WSL el nvm es otro programa distinto de nvm-windows. Primero se instala, y luego estos son los comandos que cambian y que nvm-windows no tiene.',
       items: [
+        { cmd: 'curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash', desc: 'Instala nvm en macOS, Linux o WSL: clona nvm en ~/.nvm y agrega las líneas necesarias a tu archivo de perfil.', alias: 'wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash', warn: 'Ejecuta un script descargado de internet; revísalo antes si no confías en la fuente. Cierra y abre la terminal al terminar.' },
+        { cmd: 'command -v nvm', desc: 'Confirma que nvm quedó instalado: debe imprimir nvm.', tip: 'which nvm no funciona porque nvm es una función del shell, no un ejecutable.' },
         { cmd: 'nvm install --lts', desc: 'Instala la última LTS. En nvm-windows sería nvm install lts.' },
         { cmd: 'nvm ls-remote --lts', desc: 'Lista las versiones LTS disponibles para descargar.' },
         { cmd: 'nvm alias default <version>', desc: 'Define la versión que se activa al abrir una terminal nueva.' },

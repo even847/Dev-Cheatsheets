@@ -6,6 +6,20 @@ window.CHEATSHEETS.gradle = {
   meta: { id: 'gradle', nombre: 'Gradle', subtitulo: 'Tareas, dependencias, wrapper, tests y multi-proyecto' },
   secciones: [
     {
+      id: 'instalar-gradle',
+      titulo: 'Instalar Gradle',
+      intro: 'Gradle necesita un JDK 17 o superior. Si el proyecto ya trae gradlew, puedes saltarte esta sección: el wrapper descarga la versión correcta.',
+      items: [
+        { cmd: 'winget install Gradle.Gradle', desc: 'Windows: instala Gradle con winget.', alias: 'scoop install gradle' },
+        { cmd: 'choco install gradle', desc: 'Windows: instala Gradle con Chocolatey.' },
+        { cmd: 'brew install gradle', desc: 'macOS: instala Gradle con Homebrew.', alias: 'sudo port install gradle' },
+        { cmd: 'sdk install gradle', desc: 'Linux, macOS y WSL con SDKMAN!, el método que recomienda Gradle en Linux.', tip: 'Otros gestores de paquetes pueden traer versiones que Gradle no controla y, en Linux, incluso una versión modificada incompatible con la oficial.' },
+        { cmd: 'export PATH=$PATH:/opt/gradle/gradle-<version>/bin', desc: 'Instalación manual en Linux o macOS: descarga la distribución binaria (bin) desde la página de releases, descomprímela (por ejemplo en /opt/gradle) y agrega su carpeta bin al PATH.', tip: 'En Windows: descomprime en C:\\Gradle y agrega C:\\Gradle\\gradle-<version>\\bin a la variable Path del sistema.' },
+        { cmd: 'gradle -v', desc: 'Confirma la instalación, en una terminal nueva.' },
+        { cmd: 'gradle init', desc: 'En un proyecto nuevo, genera la estructura base con el wrapper (gradlew); desde ahí usa ./gradlew para que todo el equipo comparta la misma versión.' }
+      ]
+    },
+    {
       id: 'empezar-de-cero',
       titulo: 'Empezar de cero',
       tipo: 'pasos',

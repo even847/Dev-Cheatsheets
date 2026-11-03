@@ -9,7 +9,7 @@ window.CHEATSHEETS.gh = {
       id: 'empezar-de-cero',
       titulo: 'Empezar de cero',
       tipo: 'pasos',
-      intro: 'gh es el cliente oficial de GitHub para la terminal. Sigue estos pasos en orden, en PowerShell.',
+      intro: 'gh es el cliente oficial de GitHub para la terminal. Sigue estos pasos en orden, en PowerShell (Windows). En macOS o Linux, instala gh con la sección "Instalar en macOS y Linux" y continúa desde "gh auth login".',
       items: [
         {
           cmd: 'winget install --id GitHub.cli',
@@ -41,6 +41,21 @@ window.CHEATSHEETS.gh = {
         }
       ],
       nota: 'Los comandos de gh se ejecutan dentro de la carpeta de un repositorio. Fuera de él, agrega -R <usuario>/<repo> para indicar sobre cuál trabajar.'
+    },
+    {
+      id: 'instalar-en-mac-y-linux',
+      titulo: 'Instalar en macOS y Linux',
+      intro: 'El paso de "Empezar de cero" instala gh en Windows. En macOS y Linux solo cambia cómo se instala; después los comandos son los mismos.',
+      items: [
+        { cmd: 'brew install gh', desc: 'macOS y Linux: instala gh con Homebrew.', tip: 'En Linux, el paquete de Homebrew es mantenido por la comunidad, no por el equipo de gh.' },
+        { cmd: 'sudo apt update && sudo apt install gh -y', desc: 'Debian y Ubuntu, una vez agregado el repositorio oficial de GitHub CLI.', tip: 'Antes hay que agregar la clave y el repositorio (cli.github.com/packages); los pasos exactos están en github.com/cli/cli/blob/trunk/docs/install_linux.md. Evita las versiones 2.45.x y 2.46.x de paquetes de la comunidad: están rotas.' },
+        { cmd: 'sudo dnf install gh', desc: 'Fedora (paquete de la comunidad). Para RHEL o la versión oficial, agrega primero el repositorio: sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo' },
+        { cmd: 'sudo zypper install gh', desc: 'openSUSE, una vez agregado el repositorio oficial (sudo zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo y sudo zypper ref).' },
+        { cmd: 'sudo pacman -S github-cli', desc: 'Arch Linux (paquete de la comunidad).' },
+        { cmd: 'apk add github-cli', desc: 'Alpine Linux (paquete de la comunidad).' },
+        { cmd: 'conda install gh --channel conda-forge', desc: 'Con Conda, desde el canal conda-forge (comunidad).' },
+        { cmd: 'gh --version', desc: 'Confirma que gh quedó instalado, en cualquier sistema.' }
+      ]
     },
     {
       id: 'autenticacion',
