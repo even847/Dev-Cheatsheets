@@ -56,6 +56,42 @@ window.CHEATSHEETS.kubernetes = {
       ]
     },
     {
+      id: 'anatomia-de-un-comando',
+      titulo: 'Cómo se arma un comando',
+      intro: 'Casi todos los comandos de kubectl siguen la misma estructura: kubectl <verbo> <recurso> [nombre] [opciones]. Por ejemplo, en "kubectl logs -l app=isb -n vulcano-core-test -f": logs es el verbo, -l app=isb elige los pods por etiqueta, -n vulcano-core-test elige el namespace y -f sigue los logs en vivo. Las opciones se pueden poner en cualquier orden.',
+      items: [
+        { cmd: 'kubectl <verbo> <recurso> <nombre>', desc: 'Estructura base. Verbo = qué hacer (get, describe, logs, delete, apply). Recurso = sobre qué tipo de objeto (pods, deployments, svc). Nombre = cuál en concreto (opcional).', ej: 'kubectl get pods\nkubectl describe pod mi-app-6f9d8c7b8-abcde\nkubectl delete deployment mi-app' },
+        { cmd: 'kubectl <verbo> <recurso> -n <namespace>', desc: 'Agrega el namespace donde buscar. Sin -n, kubectl usa el namespace por defecto del contexto activo.', ej: 'kubectl get pods -n vulcano-core-test' },
+        { cmd: 'kubectl <verbo> <recurso> -l <clave>=<valor>', desc: 'Filtra por etiqueta (label) en vez de por nombre. Útil porque los pods tienen nombres con sufijos aleatorios que cambian en cada despliegue.', ej: 'kubectl get pods -l app=isb' },
+        { cmd: 'kubectl get pods --show-labels', desc: 'Muestra las etiquetas de cada pod. Así descubres qué poner después de -l.', ej: 'NAME                   READY   STATUS    LABELS\nisb-7c9f5d6b8-x2k4p    1/1     Running   app=isb,pod-template-hash=7c9f5d6b8' },
+        { cmd: 'kubectl get pods -n <namespace> -l <clave>=<valor> -o wide', desc: 'Se pueden combinar todas las opciones: namespace + etiqueta + formato de salida.' },
+        { cmd: 'kubectl <verbo> --help', desc: 'Lista todas las opciones que acepta un verbo, con ejemplos. Es la forma de averiguar qué flag usar.', alias: 'kubectl explain <recurso>', tip: 'Prueba kubectl logs --help: casi todos los flags de la sección Logs salen ahí.' }
+      ]
+    },
+    {
+      id: 'flags-y-opciones',
+      titulo: 'Flags y opciones (qué significa cada uno)',
+      tipo: 'glosario',
+      intro: 'Los "flags" son las opciones que empiezan con guion. Los de una letra llevan un guion (-n) y los de nombre completo llevan dos (--namespace); casi siempre son equivalentes.',
+      items: [
+        { term: '-n, --namespace', def: 'Namespace sobre el que se ejecuta el comando. Ejemplo: -n vulcano-core-test.' },
+        { term: '-A, --all-namespaces', def: 'Aplica el comando a todos los namespaces a la vez.' },
+        { term: '-l, --selector', def: 'Selector de etiquetas: filtra los recursos por label. Ejemplo: -l app=isb (los que tengan app con valor isb). Se pueden combinar con coma: -l app=isb,env=test.' },
+        { term: 'app=isb', def: 'Una etiqueta (label) es un par clave=valor puesto en el recurso. "app" es solo un nombre de clave por convención; cada equipo define las suyas. Se ven con --show-labels.' },
+        { term: '-f (en logs)', def: 'Follow: deja el comando corriendo y va mostrando los logs nuevos en vivo. Se corta con Ctrl+C.' },
+        { term: '-f, --filename (en apply, delete, diff)', def: 'Ojo: -f significa otra cosa según el comando. Con apply/delete/diff es el archivo YAML a usar.' },
+        { term: '-o, --output', def: 'Formato de la salida: wide (más columnas), yaml, json, name, jsonpath=...' },
+        { term: '-c, --container', def: 'Contenedor específico dentro del pod, cuando tiene más de uno.' },
+        { term: '-w, --watch', def: 'Queda observando y muestra cada cambio de los recursos en vivo.' },
+        { term: '-it', def: 'Son dos flags juntos (-i interactivo y -t terminal), necesarios en exec para abrir una shell.' },
+        { term: '--', def: 'Separa las opciones de kubectl del comando que se ejecuta dentro del contenedor. Ejemplo: kubectl exec -it <pod> -- sh.' },
+        { term: '--tail', def: 'Cantidad de líneas finales a mostrar. Ejemplo: --tail=100.' },
+        { term: '--since', def: 'Solo logs de los últimos X tiempo. Ejemplo: --since=10m, --since=2h.' },
+        { term: '--previous', def: 'Logs de la instancia anterior del contenedor (cuando se reinició o crasheó).' },
+        { term: '--dry-run=client', def: 'Simula el comando sin ejecutarlo realmente.' }
+      ]
+    },
+    {
       id: 'contexto-y-configuracion',
       titulo: 'Contexto y configuración',
       intro: 'El kubeconfig (por defecto ~/.kube/config) guarda clusters, usuarios y contextos; kubectl siempre opera contra el contexto activo.',
@@ -145,6 +181,33 @@ window.CHEATSHEETS.kubernetes = {
         { cmd: 'kubectl describe node <nodo>', desc: 'Muestra el detalle de un nodo: capacidad, recursos asignados y condiciones.' },
         { cmd: 'kubectl top pod', desc: 'Muestra el consumo de CPU y memoria de los pods.', warn: 'Requiere metrics-server instalado en el cluster; sin él, el comando falla.' },
         { cmd: 'kubectl top node', desc: 'Muestra el consumo de CPU y memoria de los nodos.', warn: 'También requiere metrics-server.' }
+      ]
+    },
+    {
+      id: 'logs',
+      titulo: 'Logs paso a paso',
+      tipo: 'pasos',
+      intro: 'Se parte del comando más simple y se le va agregando una opción por vez. Así se entiende cómo llegar a un comando como: kubectl logs -l app=isb -n vulcano-core-test -f',
+      items: [
+        { cmd: 'kubectl get pods -n <namespace> --show-labels', desc: 'Paso 1: ve qué pods hay en el namespace y qué etiquetas tienen. De aquí sacas el valor para -l.' },
+        { cmd: 'kubectl logs <pod> -n <namespace>', desc: 'Paso 2: logs de un pod puntual, usando su nombre exacto.' },
+        { cmd: 'kubectl logs <pod> -n <namespace> -f', desc: 'Paso 3: agrega -f para seguir los logs en vivo (Ctrl+C para salir).' },
+        { cmd: 'kubectl logs -l <clave>=<valor> -n <namespace>', desc: 'Paso 4: en vez del nombre del pod, usa su etiqueta con -l; sirve aunque el pod cambie de nombre.', tip: 'Con -l, kubectl muestra por defecto solo las últimas 10 líneas de cada pod. Agrega --tail=100 (o --tail=-1 para todo).' },
+        { cmd: 'kubectl logs -l <clave>=<valor> -n <namespace> -f', desc: 'Paso 5: el comando completo. Sigue en vivo los logs de todos los pods con esa etiqueta.', ej: 'kubectl logs -l app=isb -n vulcano-core-test -f', warn: 'Con -l y -f kubectl sigue como máximo 5 pods a la vez. Si hay más, agrega --max-log-requests=<n>.' }
+      ]
+    },
+    {
+      id: 'logs-recetas',
+      titulo: 'Logs: variantes útiles',
+      items: [
+        { cmd: 'kubectl logs -l <clave>=<valor> -n <namespace> -f --tail=100', desc: 'Empieza con las últimas 100 líneas y sigue en vivo.' },
+        { cmd: 'kubectl logs -l <clave>=<valor> -n <namespace> --since=10m', desc: 'Solo lo ocurrido en los últimos 10 minutos.' },
+        { cmd: 'kubectl logs -l <clave>=<valor> -n <namespace> -f --prefix', desc: 'Antepone el nombre del pod a cada línea; imprescindible cuando mezclas logs de varias réplicas.' },
+        { cmd: 'kubectl logs -l <clave>=<valor> -n <namespace> -f --timestamps', desc: 'Agrega fecha y hora a cada línea.' },
+        { cmd: 'kubectl logs -l <clave>=<valor> -n <namespace> --all-containers=true', desc: 'Incluye todos los contenedores de cada pod (sidecars, init, etc.).' },
+        { cmd: 'kubectl logs -l <clave>=<valor> -n <namespace> --tail=-1 > logs.txt', desc: 'Guarda todos los logs en un archivo para revisarlos o compartirlos.' },
+        { cmd: 'kubectl logs deployment/<nombre> -n <namespace> -f', desc: 'Atajo: logs de un pod del Deployment sin buscar su nombre.', tip: 'Muestra un solo pod aunque haya varias réplicas; para ver todas, usa -l.' },
+        { cmd: 'kubectl logs -l <clave>=<valor> -n <namespace> -f | findstr "ERROR"', desc: 'PowerShell/CMD: filtra solo las líneas que contienen ERROR.', alias: 'kubectl logs -l <clave>=<valor> -n <namespace> -f | grep ERROR' }
       ]
     },
     {
